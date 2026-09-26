@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ t('log_work') }}</h1>
+{% if saved %}<div class="alert">{{ t('entry_saved') }}</div>{% endif %}
+{% if request.args.get('deleted') %}<div class="alert">{{ t('entry_deleted') }}</div>{% endif %}
+<div class="card">
+  <form method="post">
+    <label>{{ t('activity_type') }}</label>
+    <select name="type">
+      {% for ty in types %}<option value="{{ ty }}">{{ t('type_' + ty) }}</option>{% endfor %}
+    </select>
+    <label>{{ t('date') }}</label>
+    <input type="date" name="date" value="{{ today }}" required>
+    <label>{{ t('location') }}</label>
+    <input type="text" name="location">
+    <label>{{ t('people_count') }}</label>
+    <input type="number" name="people_count" min="0" value="0">
+    <label>{{ t('notes') }}</label>
+    <textarea name="notes" placeholder="{{ t('notes_ph') }}"></textarea>
+    <div class="checkrow">
+      <input type="checkbox" name="follow_up" id="fu" value="1">
+      <label for="fu" style="margin:0">{{ t('follow_up') }}</label>
+    </div>
+    <button class="btn" type="submit">{{ t('save') }}</button>
+  </form>
+</div>
+<h2>{{ t('recent_activity') }}</h2>
+{% for e in entries %}
+<div class="entry">
+  <span class="etype">{{ t('type_' + e.type) }}</span>
+  {% if e.follow_up %}<span class="badge">{{ t('follow_up') }}</span>{% endif %}
+  <div class="meta">{{ e.date }}{% if e.location %} &middot; {{ e.location }}{% endif %}{% if e.people_count %} &middot; {{ e.people_count }}{% endif %}</div>
+  {% if e.notes %}<div>{{ e.notes }}</div>{% endif %}
+  <form method="post" action="{{ url_for('delete_entry', entry_id=e.id) }}" onsubmit="return confirm('{{ t('delete_confirm') }}')">
+    <button class="btn danger" type="submit">{{ t('delete') }}</button>
+  </form>
+</div>
+{% else %}
+<p>{{ t('no_entries') }}</p>
+{% endfor %}
+{% endblock %}

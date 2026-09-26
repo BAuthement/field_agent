@@ -1,0 +1,25 @@
+# Render Blueprint — Field Agent (RECOMMENDED free deploy: Render + Neon)
+#
+# How to use (Brandon's punch list walks through this click-by-click):
+#   1. Push this folder to a GitHub repo.
+#   2. Create a free database at neon.com, copy its connection string.
+#   3. In Render: New -> Blueprint -> connect the repo. Paste the Neon
+#      connection string when asked for DATABASE_URL.
+#
+# Why Neon instead of SQLite: Render's free tier has NO persistent disk, so a
+# SQLite file would be wiped every time the service sleeps or redeploys. Neon
+# Postgres is free forever (0.5 GB, auto-sleeps when idle, wakes on demand).
+services:
+  - type: web
+    name: field-agent
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    envVars:
+      - key: FIELD_AGENT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false   # paste the Neon connection string at deploy time
+      - key: SECURE_COOKIES
+        value: "1"

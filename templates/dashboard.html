@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ t('welcome_back', name=user.name.split(' ')[0]) }}</h1>
+<p class="sub">{{ t('dash_sub') }}</p>
+<div class="stats">
+  <div class="stat"><div class="num">{{ stats.activities }}</div><div class="lbl">{{ t('stat_activities') }}</div></div>
+  <div class="stat"><div class="num">{{ stats.people }}</div><div class="lbl">{{ t('stat_people') }}</div></div>
+  <div class="stat"><div class="num">{{ stats.baptisms }}</div><div class="lbl">{{ t('stat_baptisms') }}</div></div>
+  <div class="stat"><div class="num">{{ stats.churches }}</div><div class="lbl">{{ t('stat_churches') }}</div></div>
+  <div class="stat"><div class="num">{{ stats.lessons }}</div><div class="lbl">{{ t('stat_lessons') }}</div></div>
+  <div class="stat"><div class="num">{{ stats.followups }}</div><div class="lbl">{{ t('stat_followups') }}</div></div>
+</div>
+<div class="card mt">
+  <h2>{{ t('recent_activity') }}</h2>
+  {% if recent %}
+    {% for e in recent %}
+    <div class="entry">
+      <span class="etype">{{ t('type_' + e.type) }}</span>
+      {% if e.follow_up %}<span class="badge">{{ t('follow_up') }}</span>{% endif %}
+      <div class="meta">{{ e.date }}{% if e.location %} &middot; {{ e.location }}{% endif %}{% if e.people_count %} &middot; {{ e.people_count }} {{ t('people_count')|lower }}{% endif %}</div>
+      {% if e.notes %}<div>{{ e.notes[:160] }}{% if e.notes|length > 160 %}&hellip;{% endif %}</div>{% endif %}
+    </div>
+    {% endfor %}
+  {% else %}
+    <p>{{ t('no_entries') }}</p>
+    <a class="btn" href="{{ url_for('log_work') }}">{{ t('log_work') }}</a>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ t('assistant_title') }}</h1>
+<p class="sub">{{ t('assistant_sub') }}</p>
+<div class="quickactions">
+  <button data-q="weekly">{{ t('qa_weekly') }}</button>
+  <button data-q="donor">{{ t('qa_donor') }}</button>
+  <button data-q="quiz">{{ t('qa_quiz') }}</button>
+  <button data-q="loghelp">{{ t('qa_loghelp') }}</button>
+  <button data-q="encourage">{{ t('qa_encourage') }}</button>
+</div>
+<div class="chatlog" id="chatlog"></div>
+<form class="chatform" id="chatform">
+  <input type="text" id="chatinput" placeholder="{{ t('assistant_ph') }}" autocomplete="off">
+  <button class="btn" type="submit">{{ t('send') }}</button>
+</form>
+<script>
+const log = document.getElementById('chatlog');
+const form = document.getElementById('chatform');
+const input = document.getElementById('chatinput');
+function addMsg(text, who) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + who;
+  d.textContent = text;
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+}
+async function ask(q) {
+  addMsg(q === input.value ? q : document.querySelector(`[data-q="${q}"]`).textContent, 'user');
+  input.value = '';
+  try {
+    const r = await fetch('{{ url_for("assistant_ask") }}', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({message: q})
+    });
+    const j = await r.json();
+    addMsg(j.reply, 'bot');
+  } catch (e) { addMsg('Error. / Error.', 'bot'); }
+}
+document.querySelectorAll('.quickactions button').forEach(b => b.addEventListener('click', () => ask(b.dataset.q)));
+form.addEventListener('submit', e => { e.preventDefault(); if (input.value.trim()) ask(input.value.trim()); });
+</script>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="authwrap">
+  <div class="card">
+    <h1>{{ t('register') }}</h1>
+    {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+    <form method="post">
+      <label>{{ t('name') }}</label>
+      <input type="text" name="name" required>
+      <label>{{ t('email') }}</label>
+      <input type="email" name="email" required>
+      <label>{{ t('password') }}</label>
+      <input type="password" name="password" required minlength="6">
+      <label>{{ t('field_location') }}</label>
+      <input type="text" name="field_location" placeholder="{{ t('field_location_ph') }}">
+      <button class="btn" type="submit">{{ t('register') }}</button>
+    </form>
+    <p class="mt">{{ t('have_account') }} <a href="{{ url_for('login') }}">{{ t('login') }}</a></p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+:root { --green: #1b5e20; --gold: #b8860b; --bg: #f7f5ef; --card: #ffffff; --text: #2b2b2b; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.5; }
+.topbar { background: var(--green); color: #fff; padding: 0.7rem 1rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+.topbar a { color: #fff; text-decoration: none; }
+.brand { font-weight: 700; font-size: 1.15rem; }
+.lang-toggle a { opacity: 0.6; font-size: 0.85rem; padding: 0.2rem 0.3rem; }
+.lang-toggle a.active { opacity: 1; font-weight: 700; text-decoration: underline; }
+.tabs { display: flex; overflow-x: auto; background: var(--card); border-bottom: 2px solid var(--gold); position: sticky; top: 52px; z-index: 9; }
+.tabs a { flex: 1 0 auto; text-align: center; padding: 0.65rem 0.4rem; text-decoration: none; color: var(--green); font-size: 0.82rem; white-space: nowrap; }
+.container { max-width: 720px; margin: 0 auto; padding: 1rem; padding-bottom: 3rem; }
+.card { background: var(--card); border-radius: 10px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+h1 { font-size: 1.4rem; color: var(--green); margin: 0.2rem 0 0.6rem; }
+h2 { font-size: 1.15rem; color: var(--green); margin: 0.2rem 0 0.5rem; }
+.sub { color: #666; margin-top: -0.4rem; margin-bottom: 1rem; }
+label { display: block; font-weight: 600; margin: 0.7rem 0 0.25rem; font-size: 0.92rem; }
+input[type=text], input[type=email], input[type=password], input[type=date], input[type=number], select, textarea {
+  width: 100%; padding: 0.65rem; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; background: #fff; }
+textarea { min-height: 90px; }
+.btn { display: inline-block; background: var(--green); color: #fff; border: none; border-radius: 8px; padding: 0.7rem 1.4rem; font-size: 1rem; cursor: pointer; text-decoration: none; margin-top: 0.8rem; }
+.btn.secondary { background: #6b7c6d; }
+.btn.danger { background: #b3261e; padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+.btn.gold { background: var(--gold); }
+.checkrow { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.7rem; }
+.checkrow input { width: 1.2rem; height: 1.2rem; }
+.stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem; }
+.stat { background: var(--card); border-radius: 10px; padding: 0.8rem 0.5rem; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.stat .num { font-size: 1.5rem; font-weight: 800; color: var(--green); }
+.stat .lbl { font-size: 0.75rem; color: #666; }
+.entry { border-left: 4px solid var(--gold); padding: 0.6rem 0.8rem; margin-bottom: 0.7rem; background: #fff; border-radius: 0 8px 8px 0; }
+.entry .meta { font-size: 0.8rem; color: #777; }
+.entry .etype { display: inline-block; background: var(--green); color: #fff; font-size: 0.72rem; border-radius: 20px; padding: 0.1rem 0.6rem; margin-bottom: 0.25rem; }
+.badge { display: inline-block; background: var(--gold); color: #fff; font-size: 0.72rem; border-radius: 20px; padding: 0.1rem 0.6rem; margin-left: 0.4rem; }
+.alert { background: #e8f5e9; border: 1px solid var(--green); border-radius: 8px; padding: 0.7rem; margin-bottom: 1rem; }
+.alert.error { background: #fdecea; border-color: #b3261e; }
+.lesson-body { white-space: pre-wrap; font-size: 0.98rem; }
+.lookfwd { background: #fff8e1; border-left: 4px solid var(--gold); padding: 0.8rem; border-radius: 0 8px 8px 0; white-space: pre-wrap; margin-top: 1rem; }
+.lesson-link { display: block; padding: 0.7rem; border-bottom: 1px solid #eee; text-decoration: none; color: var(--text); }
+.lesson-link .done { color: var(--green); font-weight: 700; }
+.progressbar { background: #e0e0e0; border-radius: 10px; height: 10px; overflow: hidden; margin: 0.4rem 0; }
+.progressbar > div { background: var(--green); height: 100%; }
+.chatlog { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; max-height: 50vh; overflow-y: auto; }
+.msg { max-width: 88%; padding: 0.65rem 0.9rem; border-radius: 14px; white-space: pre-wrap; font-size: 0.95rem; }
+.msg.user { align-self: flex-end; background: var(--green); color: #fff; }
+.msg.bot { align-self: flex-start; background: #fff; border: 1px solid #ddd; }
+.quickactions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.8rem; }
+.quickactions button { background: #e8f5e9; border: 1px solid var(--green); color: var(--green); border-radius: 20px; padding: 0.45rem 0.9rem; font-size: 0.85rem; cursor: pointer; }
+.chatform { display: flex; gap: 0.5rem; }
+.chatform input { flex: 1; }
+.chatform .btn { margin-top: 0; }
+.footer { text-align: center; color: #999; font-size: 0.78rem; padding: 1.5rem 1rem 2rem; }
+.authwrap { max-width: 420px; margin: 2rem auto; }
+.center { text-align: center; }
+.mt { margin-top: 1rem; }

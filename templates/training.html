@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ t('training_title') }}</h1>
+<p class="sub">{{ t('training_sub') }}</p>
+{% for item in levels %}
+{% set lvl = item.level %}
+<div class="card">
+  <h2>{{ lvl.number }}: {{ lvl.name }}</h2>
+  <p class="sub">{{ lvl.description }}</p>
+  {% if lvl.lessons %}
+    {% set pct = (100 * item.done / lvl.lesson_count) if lvl.lesson_count else 0 %}
+    <div class="progressbar"><div style="width:{{ pct|round|int }}%"></div></div>
+    <p>{{ item.done }} / {{ lvl.lesson_count }} {{ t('complete') }}</p>
+    <a class="btn" href="{{ url_for('training_level', level_id=lvl.id) }}">{{ t('continue_level') if item.done else t('start_level') }}</a>
+  {% else %}
+    <p><em>{{ t('locked_note') }}</em></p>
+  {% endif %}
+</div>
+{% endfor %}
+<p class="sub center">{{ t('curriculum_note') }}</p>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<a href="{{ url_for('training_level', level_id=level.id) }}">{{ t('back_to_levels') }}</a>
+<h1>{{ t('lesson_of', n=lesson.number, total=total) }}: {{ lesson.title }}</h1>
+<p class="sub">{{ level.number }}: {{ level.name }}</p>
+<div class="card">
+  <div class="lesson-body">{{ lesson.body }}</div>
+  {% if lesson.look_forward %}
+  <div class="lookfwd"><strong>{{ t('look_forward') }}</strong>&#10;{{ lesson.look_forward }}</div>
+  {% endif %}
+</div>
+<form method="post" action="{{ url_for('toggle_lesson', level_id=level.id, number=lesson.number) }}">
+  {% if done %}
+    <div class="alert">&#x2713; {{ t('completed') }}</div>
+    <button class="btn secondary" type="submit">{{ t('mark_incomplete') }}</button>
+  {% else %}
+    <button class="btn gold" type="submit">{{ t('mark_complete') }}</button>
+  {% endif %}
+</form>
+<div class="mt" style="display:flex; justify-content:space-between;">
+  {% if prev_n %}<a class="btn secondary" href="{{ url_for('training_lesson', level_id=level.id, number=prev_n) }}">{{ t('prev_lesson') }}</a>{% else %}<span></span>{% endif %}
+  {% if next_n %}<a class="btn secondary" href="{{ url_for('training_lesson', level_id=level.id, number=next_n) }}">{{ t('next_lesson') }}</a>{% endif %}
+</div>
+{% endblock %}

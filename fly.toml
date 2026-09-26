@@ -1,0 +1,44 @@
+# fly.toml — FALLBACK deploy config (Fly.io).
+#
+# NOTE: Fly.io has no free tier for new accounts (2026) — only a short trial,
+# then ~$2-5/mo pay-as-you-go. Prefer render.yaml (Render free + Neon free).
+# This file exists so the app can move to always-on hosting later if desired.
+#
+# Usage: fly launch (once) -> fly secrets set FIELD_AGENT_SECRET=... DATABASE_URL=...
+#        -> fly deploy. For SQLite-on-a-volume instead of Postgres, create a
+#        volume and mount it at /app/data (see commented [mounts] below).
+
+app = "field-agent-npl"
+primary_region = "mia"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 5000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    method = "GET"
+    path = "/healthz"
+    timeout = "5s"
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1
+
+[env]
+  SECURE_COOKIES = "1"
+
+# SQLite-on-volume alternative (only if you skip Postgres):
+# 1. fly volumes create fieldagent_data --size 1
+# 2. Uncomment the block below (and unset DATABASE_URL).
+# [mounts]
+#   source = "fieldagent_data"
+#   destination = "/app/data"

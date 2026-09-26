@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<a href="{{ url_for('training') }}">{{ t('back_to_levels') }}</a>
+<h1>{{ level.number }}: {{ level.name }}</h1>
+<p class="sub">{{ level.description }}</p>
+<div class="card" style="padding:0">
+  {% for item in lessons %}
+  <a class="lesson-link" href="{{ url_for('training_lesson', level_id=level.id, number=item.lesson.number) }}">
+    {% if item.done %}<span class="done">&#x2713;</span>{% endif %}
+    {{ t('lesson_of', n=item.lesson.number, total=level.lesson_count) }}: {{ item.lesson.title }}
+  </a>
+  {% endfor %}
+</div>
+{% if level.manual_url %}
+<a class="btn secondary" href="{{ level.manual_url }}" target="_blank" rel="noopener">{{ t('download_manual') }}</a>
+{% endif %}
+{% endblock %}

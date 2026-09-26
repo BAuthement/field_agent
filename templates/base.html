@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ t('app_name') }}{% block title %}{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}">&#x1f54a; {{ t('app_name') }}</a>
+  <div class="lang-toggle">
+    <a href="{{ url_for('set_lang', code='en') }}" class="{{ 'active' if lang == 'en' else '' }}">EN</a> |
+    <a href="{{ url_for('set_lang', code='es') }}" class="{{ 'active' if lang == 'es' else '' }}">ES</a>
+  </div>
+</header>
+{% if session.get('user_id') %}
+<nav class="tabs">
+  <a href="{{ url_for('dashboard') }}">&#x1f3e0; {{ t('nav_dashboard') }}</a>
+  <a href="{{ url_for('log_work') }}">&#x1f4dd; {{ t('nav_log') }}</a>
+  <a href="{{ url_for('training') }}">&#x1f4d6; {{ t('nav_training') }}</a>
+  <a href="{{ url_for('reports') }}">&#x1f4ca; {{ t('nav_reports') }}</a>
+  <a href="{{ url_for('assistant_page') }}">&#x1f4ac; {{ t('nav_assistant') }}</a>
+  <a href="{{ url_for('profile') }}">&#x1f464; {{ t('nav_profile') }}</a>
+</nav>
+{% endif %}
+<main class="container">
+  {% block content %}{% endblock %}
+</main>
+<footer class="footer">{{ t('footer') }}</footer>
+</body>
+</html>

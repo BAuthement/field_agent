@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ t('reports_title') }}</h1>
+<p class="sub">{{ t('reports_sub') }}</p>
+{% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+<div class="card">
+  <form method="post" action="{{ url_for('reports_generate') }}">
+    <label>{{ t('start_date') }}</label>
+    <input type="date" name="start_date" value="{{ start }}" required>
+    <label>{{ t('end_date') }}</label>
+    <input type="date" name="end_date" value="{{ end }}" required>
+    <button class="btn" type="submit">{{ t('generate_pdf') }}</button>
+  </form>
+</div>
+{% endblock %}
