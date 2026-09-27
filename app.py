@@ -290,11 +290,11 @@ def level_gate(level_id):
     key = gate_key_for(level_id) if lvl else None
     if not lvl or not key:
         return redirect(url_for("training"))
-    level_label = f"Level {lvl['number']}: {lvl['name']}"
+    level_label = f"{lvl['number']}: {lvl['name']}"
     if gate_attested(uid, level_id):
         return redirect(url_for("training_level", level_id=level_id))
     prev_lvl = prev_level_with_lessons(level_id)
-    prev_label = f"Level {prev_lvl['number']}: {prev_lvl['name']}" if prev_lvl else ""
+    prev_label = f"{prev_lvl['number']}: {prev_lvl['name']}" if prev_lvl else ""
     progress = user_progress(uid)
     lessons_done = bool(prev_lvl) and all(
         (prev_lvl["id"], les["number"]) in progress for les in prev_lvl["lessons"])
@@ -558,7 +558,7 @@ def profile():
 
 @app.route("/health")
 def health():
-    return jsonify({"ok": True, "version": "2.1"})
+    return jsonify({"ok": True, "version": "2.1.1"})
 
 
 @app.route("/healthz")
