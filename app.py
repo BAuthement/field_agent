@@ -1,6 +1,7 @@
 """Field Agent \u2014 missionary field companion for MissionaryAgents / NPL Academy."""
 import logging
 import os
+import random
 from datetime import date, timedelta
 from functools import wraps
 
@@ -11,8 +12,9 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 import db
 from assistant import answer as assistant_answer
-from curriculum import get_curriculum, get_lesson, get_level, next_lesson_for
-from i18n import STRINGS, get_lang, t
+from curriculum import (get_curriculum, get_lesson, get_level, get_quiz,
+                        get_gates, gate_key_for, prev_lesson_key, prev_level_with_lessons)
+from i18n import STRINGS, QUIZ_RIGHT, QUIZ_WRONG, get_lang, t
 from reports import generate_report
 
 logging.basicConfig(level=logging.INFO,
@@ -67,6 +69,68 @@ def user_progress(user_id):
     rows = conn.execute("SELECT level_id, lesson_number FROM progress WHERE user_id = ?", (user_id,)).fetchall()
     conn.close()
     return {(r["level_id"], r["lesson_number"]) for r in rows}
+
+
+def quiz_done_for(user_id):
+    conn = db.get_db()
+    rows = conn.execute("SELECT level_id, lesson_number FROM quiz_done WHERE user_id = ?", (user_id,)).fetchall()
+    conn.close()
+    return {(r["level_id"], r["lesson_number"]) for r in rows}
+
+
+def gate_attested(user_id, level_id):
+    """True when the user may enter level_id (no gate, or gate self-attested)."""
+    if not gate_key_for(level_id):
+        return True
+    conn = db.get_db()
+    row = conn.execute("SELECT 1 FROM level_gates WHERE user_id = ? AND level_id = ?",
+                       (user_id, level_id)).fetchone()
+    conn.close()
+    return bool(row)
+
+
+def gate_redirect(level_id):
+    """Redirect to the level-entry gate page when gated and unattested."""
+    if not gate_attested(session["user_id"], level_id):
+        return redirect(url_for("level_gate", level_id=level_id))
+    return None
+
+
+def get_reflection(user_id, level_id, number):
+    conn = db.get_db()
+    row = conn.execute(
+        "SELECT * FROM homework_reflections WHERE user_id = ? AND level_id = ? AND lesson_number = ?",
+        (user_id, level_id, number)).fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+
+def user_reflections(user_id):
+    """Reflections with did_homework=1, enriched with the title of the lesson
+    whose homework was reflected on (the lesson before the one being entered)."""
+    conn = db.get_db()
+    rows = conn.execute(
+        "SELECT * FROM homework_reflections WHERE user_id = ? AND did_homework = 1 ORDER BY created_at",
+        (user_id,)).fetchall()
+    conn.close()
+    out = []
+    for r in rows:
+        d = dict(r)
+        prev = prev_lesson_key(d["level_id"], d["lesson_number"])
+        les = get_lesson(prev[0], prev[1]) if prev else get_lesson(d["level_id"], d["lesson_number"])
+        d["lesson_title"] = les["title"] if les else ""
+        out.append(d)
+    return out
+
+
+def feedback_msg(pool, lang, key):
+    """Random feedback message; never the same one twice in a row."""
+    msgs = pool.get(lang, pool["en"])
+    last = session.get("fb_" + key)
+    choices = [m for m in msgs if m != last] or msgs
+    msg = random.choice(choices)
+    session["fb_" + key] = msg
+    return msg
 
 
 @app.route("/")
@@ -204,9 +268,55 @@ def training_level(level_id):
     lvl = get_level(level_id)
     if not lvl or not lvl["lessons"]:
         return redirect(url_for("training"))
+    blocked = gate_redirect(level_id)
+    if blocked:
+        return blocked
     progress = user_progress(session["user_id"])
     lessons = [{"lesson": les, "done": (level_id, les["number"]) in progress} for les in lvl["lessons"]]
     return render_template("training_level.html", level=lvl, lessons=lessons)
+
+
+@app.route("/training/<level_id>/gate", methods=["GET", "POST"])
+@login_required
+def level_gate(level_id):
+    """v2.1 — self-attested hard gate before entering Level 2/3.
+
+    The previous level's lessons must all be complete before the checklist
+    appears; every prerequisite must be checked plus the honesty affirmation.
+    """
+    uid = session["user_id"]
+    lang = get_lang(session)
+    lvl = get_level(level_id)
+    key = gate_key_for(level_id) if lvl else None
+    if not lvl or not key:
+        return redirect(url_for("training"))
+    level_label = f"Level {lvl['number']}: {lvl['name']}"
+    if gate_attested(uid, level_id):
+        return redirect(url_for("training_level", level_id=level_id))
+    prev_lvl = prev_level_with_lessons(level_id)
+    prev_label = f"Level {prev_lvl['number']}: {prev_lvl['name']}" if prev_lvl else ""
+    progress = user_progress(uid)
+    lessons_done = bool(prev_lvl) and all(
+        (prev_lvl["id"], les["number"]) in progress for les in prev_lvl["lessons"])
+    items = get_gates()[key]
+    ctx = dict(level=lvl, level_label=level_label, prev_level=prev_lvl,
+               prev_label=prev_label, items=items)
+    if request.method == "POST":
+        if not lessons_done or gate_attested(uid, level_id):
+            return redirect(url_for("level_gate", level_id=level_id))
+        all_checked = all(request.form.get(f"item_{i}") == "yes" for i in range(len(items)))
+        affirmed = request.form.get("affirm") == "yes"
+        if all_checked and affirmed:
+            conn = db.get_db()
+            conn.execute("INSERT INTO level_gates (user_id, level_id, attested_at) VALUES (?,?,?)",
+                         (uid, level_id, db.now_iso()))
+            conn.commit()
+            conn.close()
+            return redirect(url_for("training_level", level_id=level_id))
+        return render_template("level_gate.html", mode="checklist", error=t("lgate_error", lang), **ctx)
+    return render_template("level_gate.html",
+                           mode="checklist" if lessons_done else "lessons_first",
+                           error=None, **ctx)
 
 
 @app.route("/training/<level_id>/<int:number>")
@@ -216,31 +326,174 @@ def training_lesson(level_id, number):
     les = get_lesson(level_id, number)
     if not lvl or not les:
         return redirect(url_for("training"))
-    progress = user_progress(session["user_id"])
+    blocked = gate_redirect(level_id)
+    if blocked:
+        return blocked
+    uid = session["user_id"]
+    progress = user_progress(uid)
+    # Homework reflection gate: entering a lesson whose previous lesson is
+    # completed requires reflecting on the previous lesson's homework first.
+    prev = prev_lesson_key(level_id, number)
+    if prev and prev in progress:
+        refl = get_reflection(uid, level_id, number)
+        mode = request.args.get("mode", "form")
+        prev_les = get_lesson(prev[0], prev[1])
+        gate_ctx = dict(level=lvl, lesson=les, prev_lesson=prev_les,
+                        prev_level_id=prev[0], error=None)
+        if mode == "affirmed" and refl and refl["did_homework"]:
+            return render_template("homework_gate.html", mode="affirmed", **gate_ctx)
+        if not refl or not refl["did_homework"]:
+            show = "blocked" if mode == "blocked" else "form"
+            return render_template("homework_gate.html", mode=show, **gate_ctx)
     done = (level_id, number) in progress
+    questions = get_quiz(level_id, number)
+    qdone = (level_id, number) in quiz_done_for(uid)
     total = len(lvl["lessons"])
     prev_n = number - 1 if number > 1 else None
     next_n = number + 1 if number < total else None
+    fb = session.pop("quiz_feedback", None)
     return render_template("training_lesson.html", level=lvl, lesson=les, done=done,
-                           total=total, prev_n=prev_n, next_n=next_n)
+                           total=total, prev_n=prev_n, next_n=next_n,
+                           questions=questions, quiz_done=qdone,
+                           quiz_just_done=request.args.get("quiz_done"),
+                           feedback=fb)
+
+
+@app.route("/training/<level_id>/<int:number>/reflect", methods=["POST"])
+@login_required
+def reflect_homework(level_id, number):
+    uid = session["user_id"]
+    lang = get_lang(session)
+    lvl = get_level(level_id)
+    les = get_lesson(level_id, number)
+    if not lvl or not les:
+        return redirect(url_for("training"))
+    did = request.form.get("did_homework") == "yes"
+    positive = request.form.get("positive_experience", "").strip()
+    improve = request.form.get("improve", "").strip()
+    if did and (not positive or not improve):
+        prev = prev_lesson_key(level_id, number)
+        prev_les = get_lesson(prev[0], prev[1]) if prev else None
+        return render_template("homework_gate.html", level=lvl, lesson=les,
+                               prev_lesson=prev_les, prev_level_id=prev[0] if prev else level_id,
+                               mode="form", error=t("gate_required", lang))
+    existing = get_reflection(uid, level_id, number)
+    conn = db.get_db()
+    if existing:
+        conn.execute("UPDATE homework_reflections SET did_homework = ?, positive_experience = ?,"
+                     " improve = ?, created_at = ? WHERE id = ?",
+                     (1 if did else 0, positive, improve, db.now_iso(), existing["id"]))
+    else:
+        conn.execute("INSERT INTO homework_reflections (user_id, level_id, lesson_number, did_homework,"
+                     " positive_experience, improve, created_at) VALUES (?,?,?,?,?,?,?)",
+                     (uid, level_id, number, 1 if did else 0, positive, improve, db.now_iso()))
+    conn.commit()
+    conn.close()
+    if did:
+        return redirect(url_for("training_lesson", level_id=level_id, number=number, mode="affirmed"))
+    return redirect(url_for("training_lesson", level_id=level_id, number=number, mode="blocked"))
+
+
+@app.route("/training/<level_id>/<int:number>/quiz", methods=["GET", "POST"])
+@login_required
+def lesson_quiz(level_id, number):
+    uid = session["user_id"]
+    lang = get_lang(session)
+    lvl = get_level(level_id)
+    les = get_lesson(level_id, number)
+    questions = get_quiz(level_id, number)
+    if not lvl or not les or not questions:
+        return redirect(url_for("training_lesson", level_id=level_id, number=number))
+    blocked = gate_redirect(level_id)
+    if blocked:
+        return blocked
+    if (level_id, number) in quiz_done_for(uid):
+        return redirect(url_for("training_lesson", level_id=level_id, number=number))
+    total = len(questions)
+    st = session.get("quiz") or {}
+    if st.get("lid") != level_id or st.get("n") != number or st.get("idx", 0) >= total:
+        st = {"lid": level_id, "n": number, "idx": 0,
+              "order": random.sample(range(3), 3)}
+    if request.method == "POST":
+        q = questions[st["idx"]]
+        order = st["order"]
+        correct_pos = order.index(q["answer"])
+        try:
+            picked = int(request.form.get("choice", -1))
+        except (TypeError, ValueError):
+            picked = -1
+        if picked == correct_pos:
+            msg = feedback_msg(QUIZ_RIGHT, lang, "right")
+            st["idx"] += 1
+            if st["idx"] >= total:
+                conn = db.get_db()
+                if (level_id, number) not in quiz_done_for(uid):
+                    conn.execute("INSERT INTO quiz_done (user_id, level_id, lesson_number, completed_at)"
+                                 " VALUES (?,?,?,?)", (uid, level_id, number, db.now_iso()))
+                    conn.commit()
+                conn.close()
+                session.pop("quiz", None)
+                session["quiz_feedback"] = {"ok": True, "msg": msg}
+                return redirect(url_for("training_lesson", level_id=level_id, number=number,
+                                        quiz_done=1))
+            st["order"] = random.sample(range(3), 3)
+            session["quiz"] = st
+            session["quiz_feedback"] = {"ok": True, "msg": msg}
+        else:
+            session["quiz_feedback"] = {"ok": False,
+                                        "msg": feedback_msg(QUIZ_WRONG, lang, "wrong")}
+            session["quiz"] = st
+        return redirect(url_for("lesson_quiz", level_id=level_id, number=number))
+    # GET: render current question
+    q = questions[st["idx"]]
+    order = st["order"]
+    opts = q["options_es"] if lang == "es" else q["options_en"]
+    fb = session.pop("quiz_feedback", None)
+    session["quiz"] = st
+    return render_template("quiz.html", level=lvl, lesson=les, n=st["idx"] + 1,
+                           total=total, question=q["q_es"] if lang == "es" else q["q_en"],
+                           options=[opts[i] for i in order], feedback=fb,
+                           required=request.args.get("required"))
+
+
+@app.route("/training/<level_id>/<int:number>/completed")
+@login_required
+def lesson_completed(level_id, number):
+    lvl = get_level(level_id)
+    les = get_lesson(level_id, number)
+    if not lvl or not les:
+        return redirect(url_for("training"))
+    total = len(lvl["lessons"])
+    next_n = number + 1 if number < total else None
+    return render_template("lesson_completed.html", level=lvl, lesson=les, next_n=next_n)
 
 
 @app.route("/training/<level_id>/<int:number>/toggle", methods=["POST"])
 @login_required
 def toggle_lesson(level_id, number):
+    uid = session["user_id"]
+    blocked = gate_redirect(level_id)
+    if blocked:
+        return blocked
     conn = db.get_db()
     exists = conn.execute(
         "SELECT 1 FROM progress WHERE user_id = ? AND level_id = ? AND lesson_number = ?",
-        (session["user_id"], level_id, number)).fetchone()
+        (uid, level_id, number)).fetchone()
     if exists:
         conn.execute("DELETE FROM progress WHERE user_id = ? AND level_id = ? AND lesson_number = ?",
-                     (session["user_id"], level_id, number))
-    else:
-        conn.execute("INSERT INTO progress (user_id, level_id, lesson_number, completed_at) VALUES (?,?,?,?)",
-                     (session["user_id"], level_id, number, db.now_iso()))
+                     (uid, level_id, number))
+        conn.commit()
+        conn.close()
+        return redirect(url_for("training_lesson", level_id=level_id, number=number))
+    # Completing: the lesson quiz must be done first when one exists.
+    if get_quiz(level_id, number) and (level_id, number) not in quiz_done_for(uid):
+        conn.close()
+        return redirect(url_for("lesson_quiz", level_id=level_id, number=number, required=1))
+    conn.execute("INSERT INTO progress (user_id, level_id, lesson_number, completed_at) VALUES (?,?,?,?)",
+                 (uid, level_id, number, db.now_iso()))
     conn.commit()
     conn.close()
-    return redirect(url_for("training_lesson", level_id=level_id, number=number))
+    return redirect(url_for("lesson_completed", level_id=level_id, number=number))
 
 
 @app.route("/reports", methods=["GET"])
@@ -259,9 +512,10 @@ def reports_generate():
     start = request.form.get("start_date") or (date.today() - timedelta(days=30)).isoformat()
     end = request.form.get("end_date") or date.today().isoformat()
     entries = [e for e in user_entries(user["id"]) if start <= e["date"] <= end]
-    if not entries:
+    reflections = user_reflections(user["id"])
+    if not entries and not reflections:
         return render_template("reports.html", start=start, end=end, error=t("report_no_data", lang))
-    pdf = generate_report(entries, user, start, end, lang)
+    pdf = generate_report(entries, user, start, end, lang, reflections)
     fname = f"field-report-{start}-to-{end}.pdf"
     return Response(pdf, mimetype="application/pdf",
                     headers={"Content-Disposition": f'attachment; filename="{fname}"'})
@@ -304,7 +558,7 @@ def profile():
 
 @app.route("/health")
 def health():
-    return jsonify({"ok": True})
+    return jsonify({"ok": True, "version": "2.1"})
 
 
 @app.route("/healthz")

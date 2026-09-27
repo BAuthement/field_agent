@@ -23,8 +23,9 @@ TYPE_LABELS = {
 }
 
 
-def generate_report(entries, user, start, end, lang="en"):
-    """entries: list of dicts within [start, end]. Returns PDF bytes."""
+def generate_report(entries, user, start, end, lang="en", reflections=None):
+    """entries: list of dicts within [start, end]. reflections: list of dicts with
+    lesson_title, positive_experience, improve. Returns PDF bytes."""
     labels = TYPE_LABELS[lang]
     buf = io.BytesIO()
     doc = SimpleDocTemplate(buf, pagesize=LETTER, topMargin=0.7 * inch, bottomMargin=0.7 * inch)
@@ -83,6 +84,21 @@ def generate_report(entries, user, start, end, lang="en"):
             loc = f" \u2014 {e['location']}" if e.get("location") else ""
             story.append(Paragraph(f"<b>{e['date']}</b>{loc}: {note}", body))
             story.append(Spacer(1, 4))
+
+    if reflections:
+        story.append(Paragraph("Ministry experiences" if lang == "en" else "Experiencias ministeriales", h2))
+        for r in reflections:
+            title = (r.get("lesson_title") or "").strip()
+            pos = (r.get("positive_experience") or "").strip().replace("\n", " ")
+            imp = (r.get("improve") or "").strip().replace("\n", " ")
+            if title:
+                story.append(Paragraph(f"<b>{title}</b>", body))
+            if pos:
+                story.append(Paragraph(pos, body))
+            if imp:
+                lbl = "What I could do better:" if lang == "en" else "Lo que podr\u00eda mejorar:"
+                story.append(Paragraph(f"<i>{lbl}</i> {imp}", small))
+            story.append(Spacer(1, 6))
 
     story.append(Paragraph("Timeline" if lang == "en" else "Cronolog\u00eda", h2))
     trows = [[Paragraph(f"<b>{'Date' if lang == 'en' else 'Fecha'}</b>", small),

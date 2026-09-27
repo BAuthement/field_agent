@@ -48,6 +48,31 @@ CREATE TABLE IF NOT EXISTS progress (
     PRIMARY KEY (user_id, level_id, lesson_number)
 );
 CREATE INDEX IF NOT EXISTS idx_entries_user_date ON entries(user_id, date);
+CREATE TABLE IF NOT EXISTS quiz_done (
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    level_id TEXT NOT NULL,
+    lesson_number INTEGER NOT NULL,
+    completed_at TEXT NOT NULL,
+    PRIMARY KEY (user_id, level_id, lesson_number)
+);
+CREATE TABLE IF NOT EXISTS homework_reflections (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    level_id TEXT NOT NULL,
+    lesson_number INTEGER NOT NULL,
+    did_homework INTEGER NOT NULL DEFAULT 0,
+    positive_experience TEXT DEFAULT '',
+    improve TEXT DEFAULT '',
+    created_at TEXT NOT NULL,
+    UNIQUE (user_id, level_id, lesson_number)
+);
+CREATE INDEX IF NOT EXISTS idx_reflections_user ON homework_reflections(user_id);
+CREATE TABLE IF NOT EXISTS level_gates (
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    level_id TEXT NOT NULL,
+    attested_at TEXT NOT NULL,
+    PRIMARY KEY (user_id, level_id)
+);
 """
 
 # Same tables, Postgres dialect (SERIAL instead of AUTOINCREMENT).
