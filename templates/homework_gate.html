@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+{% if mode == "blocked" %}
+<h1>&#x23f3; {{ t('gate_blocked_title') }}</h1>
+<div class="card">
+  <p>{{ t('gate_blocked_body') }}</p>
+  <p class="mt">
+    <a class="btn gold" href="{{ url_for('training_lesson', level_id=level.id, number=lesson.number) }}">{{ t('gate_try_again') }}</a>
+  </p>
+  <p class="mt"><a href="{{ url_for('training_level', level_id=level.id) }}">{{ t('gate_back') }}</a></p>
+</div>
+{% elif mode == "affirmed" %}
+<h1>&#x1f331; {{ t('gate_affirm_title') }}</h1>
+<div class="card">
+  <p>{{ t('gate_affirm_body') }}</p>
+  <p class="mt">
+    <a class="btn gold" href="{{ url_for('training_lesson', level_id=level.id, number=lesson.number) }}">{{ t('gate_start_lesson') }}</a>
+  </p>
+</div>
+{% else %}
+<h1>&#x1f4dd; {{ t('gate_title') }}</h1>
+<div class="card">
+  <p>{{ t('gate_intro') }}</p>
+  <p class="sub"><strong>{{ prev_lesson.title }}</strong></p>
+  {% if error %}
+  <div class="alert error">{{ error }}</div>
+  {% endif %}
+  <form method="post" action="{{ url_for('reflect_homework', level_id=level.id, number=lesson.number) }}">
+    <div class="gate-q">
+      <label><strong>{{ t('gate_q1') }}</strong></label>
+      <div class="radio-row">
+        <label><input type="radio" name="did_homework" value="yes" required> {{ t('yes') }}</label>
+        <label><input type="radio" name="did_homework" value="no"> {{ t('no') }}</label>
+      </div>
+    </div>
+    <div class="gate-q">
+      <label for="positive_experience"><strong>{{ t('gate_q2') }}</strong></label>
+      <textarea id="positive_experience" name="positive_experience" placeholder="{{ t('gate_q2_ph') }}"></textarea>
+    </div>
+    <div class="gate-q">
+      <label for="improve"><strong>{{ t('gate_q3') }}</strong></label>
+      <textarea id="improve" name="improve" placeholder="{{ t('gate_q3_ph') }}"></textarea>
+    </div>
+    <button class="btn gold" type="submit">{{ t('gate_continue') }}</button>
+  </form>
+</div>
+{% endif %}
+{% endblock %}
