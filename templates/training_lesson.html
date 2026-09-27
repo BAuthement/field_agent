@@ -3,18 +3,38 @@
 <a href="{{ url_for('training_level', level_id=level.id) }}">{{ t('back_to_levels') }}</a>
 <h1>{{ t('lesson_of', n=lesson.number, total=total) }}: {{ lesson.title }}</h1>
 <p class="sub">{{ level.number }}: {{ level.name }}</p>
+{% if quiz_just_done %}
+<div class="alert">&#x2713; {{ t('quiz_done_banner') }}</div>
+{% endif %}
+{% if feedback %}
+<div class="alert{% if not feedback.ok %} warn{% endif %}">{{ feedback.msg }}</div>
+{% endif %}
 <div class="card">
   <div class="lesson-body">{{ lesson.body }}</div>
   {% if lesson.look_forward %}
   <div class="lookfwd"><strong>{{ t('look_forward') }}</strong>&#10;{{ lesson.look_forward }}</div>
   {% endif %}
 </div>
+{% if questions %}
+<div class="card">
+  <h3>&#x1f9e0; {{ t('quiz_title') }}</h3>
+  <p class="sub">{{ t('quiz_sub') }}</p>
+  {% if quiz_done %}
+    <div class="alert">&#x2713; {{ t('quiz_done_banner') }}</div>
+  {% else %}
+    <a class="btn gold" href="{{ url_for('lesson_quiz', level_id=level.id, number=lesson.number) }}">{{ t('quiz_start_btn') }}</a>
+  {% endif %}
+</div>
+{% endif %}
 <form method="post" action="{{ url_for('toggle_lesson', level_id=level.id, number=lesson.number) }}">
   {% if done %}
     <div class="alert">&#x2713; {{ t('completed') }}</div>
     <button class="btn secondary" type="submit">{{ t('mark_incomplete') }}</button>
   {% else %}
-    <button class="btn gold" type="submit">{{ t('mark_complete') }}</button>
+    {% if questions and not quiz_done %}
+    <div class="alert warn">{{ t('quiz_locked_note') }}</div>
+    {% endif %}
+    <button class="btn gold" type="submit"{% if questions and not quiz_done %} disabled{% endif %}>{{ t('mark_complete') }}</button>
   {% endif %}
 </form>
 <div class="mt" style="display:flex; justify-content:space-between;">

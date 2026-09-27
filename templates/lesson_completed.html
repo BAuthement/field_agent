@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>&#x1f389; {{ t('hw_remind_title') }}</h1>
+<div class="card">
+  <p>{{ t('hw_remind_body') }}</p>
+  {% if lesson.look_forward %}
+  <div class="lookfwd"><strong>{{ t('look_forward') }}</strong>&#10;{{ lesson.look_forward }}</div>
+  {% endif %}
+  <p class="mt" style="display:flex; gap:0.8rem; flex-wrap:wrap;">
+    {% if next_n %}
+    <a class="btn gold" href="{{ url_for('training_lesson', level_id=level.id, number=next_n) }}">{{ t('hw_remind_next') }}</a>
+    {% endif %}
+    <a class="btn secondary" href="{{ url_for('training_level', level_id=level.id) }}">{{ t('hw_remind_levels') }}</a>
+  </p>
+</div>
+{% endblock %}

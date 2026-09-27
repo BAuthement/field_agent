@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>&#x1f512; {{ t('lgate_title', level=level_label) }}</h1>
+{% if mode == "lessons_first" %}
+<div class="card">
+  <p><strong>{{ t('lgate_lessons_title') }}</strong></p>
+  <p>{{ t('lgate_lessons_body', prev=prev_label, level=level_label) }}</p>
+  <p class="mt">
+    <a class="btn gold" href="{{ url_for('training_level', level_id=prev_level.id) }}">{{ t('lgate_go_prev', prev=prev_label) }}</a>
+  </p>
+  <p class="mt"><a href="{{ url_for('training') }}">{{ t('gate_back') }}</a></p>
+</div>
+{% else %}
+<div class="card">
+  <p>{{ t('lgate_intro', level=level_label) }}</p>
+  <p class="sub"><strong>{{ t('lgate_checklist_title', level=level_label) }}</strong></p>
+  {% if error %}
+  <div class="alert error">{{ error }}</div>
+  {% endif %}
+  <form method="post" action="{{ url_for('level_gate', level_id=level.id) }}">
+    {% for item in items %}
+    <div class="gate-q">
+      <label><input type="checkbox" name="item_{{ loop.index0 }}" value="yes" required>
+        {{ item['es'] if lang == 'es' else item['en'] }}</label>
+    </div>
+    {% endfor %}
+    <div class="gate-q">
+      <label><input type="checkbox" name="affirm" value="yes" required>
+        <strong>{{ t('lgate_affirm') }}</strong></label>
+    </div>
+    <button class="btn gold" type="submit">{{ t('lgate_confirm', level=level_label) }}</button>
+  </form>
+  <p class="mt"><a href="{{ url_for('training') }}">{{ t('gate_back') }}</a></p>
+</div>
+{% endif %}
+{% endblock %}

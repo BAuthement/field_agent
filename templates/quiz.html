@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<a href="{{ url_for('training_level', level_id=level.id) }}">{{ t('back_to_levels') }}</a>
+<h1>&#x1f9e0; {{ t('quiz_title') }}</h1>
+<p class="sub">{{ lesson.title }} &mdash; {{ t('quiz_q_of', n=n, total=total) }}</p>
+{% if required %}
+<div class="alert warn">{{ t('quiz_locked_note') }}</div>
+{% endif %}
+{% if feedback %}
+<div class="alert{% if not feedback.ok %} warn{% endif %}">{{ feedback.msg }}</div>
+{% endif %}
+<div class="card">
+  <h3>{{ question }}</h3>
+  <form method="post">
+    {% for opt in options %}
+    <label class="quiz-opt"><input type="radio" name="choice" value="{{ loop.index0 }}" required> {{ opt }}</label>
+    {% endfor %}
+    <button class="btn gold" type="submit">{{ t('quiz_answer_btn') }}</button>
+  </form>
+</div>
+{% endblock %}
