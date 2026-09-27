@@ -12,4 +12,4 @@ ENV FIELD_AGENT_DB=/app/data/field-agent.db
 ENV PORT=5000
 EXPOSE 5000
 # ${PORT} lets hosts like Render/Fly inject their own port; logs go to stdout.
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 2 --access-logfile - --error-logfile - app:app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 1 --access-logfile - --error-logfile - app:app"]
