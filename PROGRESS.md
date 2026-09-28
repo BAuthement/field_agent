@@ -218,3 +218,64 @@ isolation; ES checklist + lessons-first render; v1→v2.1 migration creates
 level_gates and preserves users/progress.
 Deploy bundle rebuilt: `~/workspace/your_files/field-agent-deploy.zip`
 (37 files: 35 v2 files + `curriculum/gates.json` + `templates/level_gate.html`).
+
+## V2.1.1 — label fix (2026-09-27)
+Live beta walkthrough as "Mark Z." caught a text bug on the level-entry gate
+page: "Level Level 2: Church Planter" (doubled "Level"). Cause:
+`curriculum.json` level `number` is already "Level 2", and app.py prepended
+another "Level ". Fixed `level_label`/`prev_label` in the gate view to use the
+number as-is. Also bumped /health to 2.1.1 for deploy detection. The reported
+header-"Logout" quirk was a test misclick on the ES language toggle (no header
+logout link exists; Profile → Log out works). Donor-report "Ministry
+experiences" section verified in local QA via pdftotext (60/60); live PDF
+binary could not be read by the browser task.
+
+## V2.2 (deployment in progress, 2026-09-27) — lesson illustrations + MissionaryAgents branding + experience tracking
+Two owner requests shipped together, plus a third added before release.
+
+**Illustrations.** Every training lesson page now shows its workbook diagram
+illustration(s) as the drawing model ("Example illustration — draw yours like
+this"), addressing the owner's note that students had no visual example to
+draw from.
+- 34 PNGs extracted from the three workbooks into static/img/illustrations/
+  (each >=800px wide, <250KB, 4.2MB total), mapped in
+  curriculum/illustrations.json keyed by "levelN:M".
+- 8 lessons have no workbook diagram and map to [] (nothing invented):
+  L1:2 S.W.A.P., L1:9 Prayer For Salvation, L1:10 Affirm,
+  L3:2 Spiritual Leadership, L3:7 Tools, L3:9 Training,
+  L3:11 Troubleshooting, L3:12 Treasure.
+- Wiring: curriculum.get_lesson_illustrations(), illustration context in the
+  lesson view, <figure> block in templates/training_lesson.html, EN/ES strings
+  (illus_title/illus_sub).
+
+**Branding.** Whole app now wears the MissionaryAgents brand from
+missionaryagents.org (dark navy + gold field-ops theme, real logo):
+- static/img/ma-logo.png (official MA_Logo_Full.png, resized 640px, transparent).
+- Header topbar: navy with gold underline + logo + "Field Agent"; login page:
+  navy logo band; tabs navy; buttons gold; headings navy.
+- Donor-report PDF: navy logo band at top, navy/gold palette throughout,
+  verified with embedded logo via pypdf.
+
+- /health version bumped 2.1.1 -> 2.2. qa.py version assertion updated.
+- Verification: 135/135 illustration checks, full QA 71/71 on clean local DB,
+  PDF logo-band check. Live deploy NOT yet verified — GitHub upload stalled
+  after the first illustration batch; remaining files deploy next.
+
+**Experience tracking (added 2026-09-27, before v2.2 release).** When a
+homework reflection describes ministry action ("I shared my testimony with 3
+people", "we drew the 3-Circles", "Compartí mi testimonio con cuatro
+personas"), the app now identifies the wording, maps it to an activity type
+(testimony/3-Circles/gospel -> gospel_conversation; also 3/3, baptism,
+prayer, training, church planting), and auto-logs an activity entry so it is
+counted on the dashboard and in the donor report without re-entry.
+- New module experience.py: keyword patterns (EN/ES) + people-count extraction
+  (digits and word-numbers, one optional adjective, "with N" fallback).
+- If no count is found in the text, the affirmation page asks "How many people
+  did you share with?" (new /training/<level>/<n>/count route); the saved
+  number lands on the entry.
+- entries gains source ('manual'/'reflection') and reflection_id columns via
+  init_db migration (works on the live Postgres DB too); dashboard and log
+  show a "From your reflection" badge on auto entries; editing a reflection
+  updates the linked entry instead of duplicating it.
+- QA: 11 new checks (EN testimony+count, 3-Circles ask-and-save, ES testimony,
+  blocked->affirmed, baptism, no false positive on plain study text).
