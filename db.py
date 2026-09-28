@@ -137,8 +137,29 @@ def get_db():
 def init_db():
     conn = get_db()
     conn.executescript(SCHEMA_PG if USE_PG else SCHEMA_SQLITE)
+    _ensure_entry_tracking_columns(conn)
     conn.commit()
     conn.close()
+
+
+def _ensure_entry_tracking_columns(conn):
+    """Add source/reflection_id to entries on databases created before v2.2.
+
+    source: 'manual' for hand-logged entries, 'reflection' for entries the app
+    auto-created from a homework reflection's described experience.
+    reflection_id: the homework_reflections row the entry was built from.
+    """
+    if USE_PG:
+        rows = conn.execute(
+            "SELECT column_name FROM information_schema.columns "
+            "WHERE table_name = 'entries'")
+        cols = {r["column_name"] for r in rows}
+    else:
+        cols = {r["name"] for r in conn.execute("PRAGMA table_info(entries)")}
+    if "source" not in cols:
+        conn.execute("ALTER TABLE entries ADD COLUMN source TEXT DEFAULT 'manual'")
+    if "reflection_id" not in cols:
+        conn.execute("ALTER TABLE entries ADD COLUMN reflection_id INTEGER")
 
 
 def now_iso():

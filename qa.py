@@ -219,7 +219,7 @@ except Exception as e:
     check("auth guard", False, str(e))
 
 # ---- v2.1: level-entry hard gate (self-attested prerequisites) ----
-check("v2.1 health version", '"2.1"' in c.get("/health") or "2.1" in c.get("/health"))
+check("v2.2 health version", '"version":"2.2"' in c.get("/health").replace(" ", ""))
 
 def _complete_lesson(client, lid, num, lang="en"):
     """Full lesson flow: reflection gate (if any) -> quiz -> mark complete."""
@@ -325,6 +325,71 @@ _old_prog = _con.execute("SELECT COUNT(*) FROM progress").fetchone()[0]
 _con.close()
 check("v2.1 migration adds level_gates, keeps data",
       "level_gates" in _tables and _old_users == 1 and _old_prog == 1, str(sorted(_tables)))
+
+# ---- v2.2: experience tracking (reflection -> auto-logged activity) ----
+c7 = Client()
+c7.post("/register", {"name": "Experience Tester", "email": "exp1@field.org",
+                       "password": "secret123", "field_location": "Dallas, TX"})
+_complete_lesson(c7, "level1", 1)
+page = c7.post("/training/level1/2/reflect", {"did_homework": "yes",
+    "positive_experience": "I shared my testimony with 3 people at the shelter.",
+    "improve": "I could bring a friend next time."})
+check("experience testimony auto-logged", "You are growing!" in page
+      and "How many people" not in page, page[:120])
+html = c7.get("/dashboard")
+check("experience count on dashboard", '<div class="num">3</div>' in html)
+html = c7.get("/log")
+check("experience entry badge", "From your reflection" in html and 'class="entry"' in html)
+c8 = Client()
+c8.post("/register", {"name": "Count Ask", "email": "exp2@field.org",
+                       "password": "secret123", "field_location": "Austin, TX"})
+_complete_lesson(c8, "level1", 1)
+page = c8.post("/training/level1/2/reflect", {"did_homework": "yes",
+    "positive_experience": "We drew the 3-Circles for my neighbors.",
+    "improve": "I could follow up this week."})
+check("experience asks how many", "How many people did you share with?" in page)
+m = _re.search(r'name="entry_id" value="(\d+)"', page)
+check("experience count form carries entry", m is not None)
+if m:
+    c8.post("/training/level1/2/count",
+            {"entry_id": m.group(1), "people_count": "5"})
+    html = c8.get("/dashboard")
+    check("experience saved count on dashboard", '<div class="num">5</div>' in html)
+else:
+    check("experience saved count on dashboard", False, "no entry_id in form")
+c9 = Client()
+c9.post("/register", {"name": "Spanish Tester", "email": "exp3@field.org",
+                       "password": "secret123", "field_location": "McAllen, TX"})
+_complete_lesson(c9, "level1", 1)
+c9.post("/training/level1/2/reflect", {"did_homework": "yes",
+    "positive_experience": "Compart\u00ed mi testimonio con cuatro personas en el parque.",
+    "improve": "Puedo orar m\u00e1s antes de salir."})
+html = c9.get("/dashboard")
+check("experience spanish count detected", '<div class="num">4</div>' in html)
+c10 = Client()
+c10.post("/register", {"name": "Blocked Tester", "email": "exp4@field.org",
+                        "password": "secret123", "field_location": "El Paso, TX"})
+_complete_lesson(c10, "level1", 1)
+c10.post("/training/level1/2/reflect", {"did_homework": "no"})
+html = c10.get("/log")
+check("experience blocked creates nothing", 'class="entry"' not in html)
+c10.post("/training/level1/2/reflect", {"did_homework": "yes",
+    "positive_experience": "Baptized two new believers in the river.",
+    "improve": "I could disciple them weekly."})
+html = c10.get("/log")
+check("experience affirmed after blocked", html.count('class="entry"') == 1
+      and "Baptism" in html)
+html = c10.get("/dashboard")
+check("experience baptism count on dashboard", '<div class="num">2</div>' in html)
+c11 = Client()
+c11.post("/register", {"name": "Quiet Tester", "email": "exp5@field.org",
+                        "password": "secret123", "field_location": "Laredo, TX"})
+_complete_lesson(c11, "level1", 1)
+c11.post("/training/level1/2/reflect", {"did_homework": "yes",
+    "positive_experience": "I studied the lesson and prayed about it.",
+    "improve": "I could memorize the verses."})
+html = c11.get("/log")
+check("experience no false positive", 'class="entry"' not in html)
 
 fails = [n for n, ok, _ in results if not ok]
 print(f"\n{len(results) - len(fails)}/{len(results)} passed")

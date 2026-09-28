@@ -126,6 +126,23 @@ STRINGS = {
     "gate_affirm_title": {"en": "You are growing!", "es": "\u00a1Est\u00e1s creciendo!"},
     "gate_affirm_body": {"en": "You are growing in experience, becoming wiser and a better servant for Jesus Christ. Add this experience to your donor report \u2014 it is real ministry.", "es": "Est\u00e1s creciendo en experiencia, haci\u00e9ndote m\u00e1s sabio y un mejor siervo de Jesucristo. Agrega esta experiencia a tu informe para donantes \u2014 \u00a1es ministerio real!"},
     "gate_start_lesson": {"en": "Start the lesson \u2192", "es": "Comenzar la lecci\u00f3n \u2192"},
+    # ---- v2.2: experience tracking ("how many people did you share with?") ----
+    "count_title": {"en": "How many people did you share with?", "es": "\u00bfCon cu\u00e1ntas personas compartiste?"},
+    "count_body": {"en": "It sounds like you shared {label} \u2014 logging the number helps your dashboard and donor report show the real fruit of your work.", "es": "Parece que compartiste {label}; registrar el n\u00famero ayuda a que tu panel y tu informe para donantes muestren el fruto real de tu trabajo."},
+    "count_label": {"en": "Number of people", "es": "N\u00famero de personas"},
+    "count_save": {"en": "Save count", "es": "Guardar n\u00famero"},
+    "count_skip": {"en": "Skip for now", "es": "Omitir por ahora"},
+    "auto_logged": {"en": "From your reflection", "es": "De tu reflexi\u00f3n"},
+    "share_circles": {"en": "the 3-Circles tool", "es": "la herramienta de los 3-C\u00edrculos"},
+    "share_testimony": {"en": "your testimony", "es": "tu testimonio"},
+    "share_hop": {"en": "with a house of peace", "es": "con una persona de paz"},
+    "share_gospel": {"en": "the gospel", "es": "el evangelio"},
+    "share_33": {"en": "in a 3/3 discipleship meeting", "es": "en una reuni\u00f3n de discipulado 3/3"},
+    "share_discipleship": {"en": "in discipleship / follow-up", "es": "en discipulado / seguimiento"},
+    "share_baptism": {"en": "in baptism", "es": "en el bautismo"},
+    "share_prayer": {"en": "in prayer", "es": "en oraci\u00f3n"},
+    "share_training": {"en": "training another believer", "es": "capacitando a otro creyente"},
+    "share_church": {"en": "toward a new church", "es": "hacia una nueva iglesia"},
     # ---- v2: donor report ----
     "report_ministry_exp": {"en": "Ministry experiences", "es": "Experiencias ministeriales"},
     # ---- v2.1: level-entry hard gate (self-attested prerequisites) ----
@@ -138,6 +155,8 @@ STRINGS = {
     "lgate_lessons_title": {"en": "Finish your lessons first", "es": "Termina tus lecciones primero"},
     "lgate_lessons_body": {"en": "Complete every lesson in {prev} before entering {level}. Once your lessons are done, the prerequisites will be ready here for you to confirm.", "es": "Completa todas las lecciones de {prev} antes de entrar a {level}. Cuando termines tus lecciones, los requisitos estar\u00e1n listos aqu\u00ed para que los confirmes."},
     "lgate_go_prev": {"en": "\u2190 Back to {prev}", "es": "\u2190 Volver a {prev}"},
+    "illus_title": {"en": "Example illustration \u2014 draw yours like this", "es": "Ilustraci\u00f3n de ejemplo \u2014 dibuja la tuya as\u00ed"},
+    "illus_sub": {"en": "Study this model, then practice drawing the tool yourself until you can do it from memory.", "es": "Estudia este modelo, luego practica dibujar la herramienta hasta que puedas hacerlo de memoria."},
 }
 
 # Feedback message pools: warm, dignified, never condescending. Picked at

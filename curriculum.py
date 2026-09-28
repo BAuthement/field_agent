@@ -65,6 +65,27 @@ def get_quiz(level_id, number):
     return get_quizzes().get(f"{level_id}:{number}", [])
 
 
+_ILLUS_PATH = os.path.join(_BASE, "curriculum", "illustrations.json")
+_illustrations = None
+
+
+def get_illustrations():
+    """Returns {lesson_key: [{file, caption, alt}, ...]}. lesson_key is 'level1:1' etc.
+    Each file path is relative to static/img/."""
+    global _illustrations
+    if _illustrations is None:
+        try:
+            with open(_ILLUS_PATH, encoding="utf-8") as f:
+                _illustrations = json.load(f)
+        except FileNotFoundError:
+            _illustrations = {}
+    return _illustrations
+
+
+def get_lesson_illustrations(level_id, number):
+    return get_illustrations().get(f"{level_id}:{number}", [])
+
+
 def get_gates():
     """Returns {"2": [item,...], "3": [item,...]} — self-attested level-entry
     prerequisites from the workbooks. Each item: {en, es}."""

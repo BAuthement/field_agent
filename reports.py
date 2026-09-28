@@ -1,17 +1,25 @@
 """Donor report PDF generation with ReportLab."""
 import io
+import os
 from datetime import date
 
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
-from reportlab.platypus import (Paragraph, SimpleDocTemplate, Spacer, Table,
+from reportlab.platypus import (Image as RLImage, Paragraph, SimpleDocTemplate, Spacer, Table,
                                 TableStyle, HRFlowable)
 
-ACCENT = colors.HexColor("#1b5e20")
-GOLD = colors.HexColor("#b8860b")
-LIGHT = colors.HexColor("#f1f8e9")
+ACCENT = colors.HexColor("#0d1626")   # MissionaryAgents dark navy
+GOLD = colors.HexColor("#d9a441")      # brand gold
+LIGHT = colors.HexColor("#eceff5")     # light navy tint
+NAVY = colors.HexColor("#0d1626")
+
+LOGO_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                         "static", "img", "ma-logo.png")
+# ma-logo.png is 640x226 (aspect 2.832); explicit height keeps it undistorted
+LOGO_W = 2.3 * inch
+LOGO_H = LOGO_W / 2.832
 
 TYPE_LABELS = {
     "en": {"gospel_conversation": "Gospel conversations", "discipleship_meeting": "Discipleship meetings",
@@ -36,6 +44,18 @@ def generate_report(entries, user, start, end, lang="en", reflections=None):
     small = ParagraphStyle("Small", parent=styles["BodyText"], fontSize=9, textColor=colors.grey)
 
     story = []
+    if os.path.exists(LOGO_PATH):
+        band = Table([[RLImage(LOGO_PATH, width=LOGO_W, height=LOGO_H)]],
+                     colWidths=[6.5 * inch])
+        band.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, -1), NAVY),
+            ("LINEBELOW", (0, 0), (-1, -1), 2, GOLD),
+            ("LEFTPADDING", (0, 0), (-1, -1), 14),
+            ("TOPPADDING", (0, 0), (-1, -1), 10),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+        ]))
+        story.append(band)
+        story.append(Spacer(1, 12))
     heading = "Field Report" if lang == "en" else "Informe de Campo"
     story.append(Paragraph(heading, title))
     story.append(Paragraph("MissionaryAgents \u2014 NoPlaceLeft Academy", small))

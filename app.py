@@ -12,8 +12,11 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 import db
 from assistant import answer as assistant_answer
-from curriculum import (get_curriculum, get_lesson, get_level, get_quiz,
+from curriculum import (get_curriculum, get_lesson, get_lesson_illustrations,
+                        get_level, get_quiz,
                         get_gates, gate_key_for, prev_lesson_key, prev_level_with_lessons)
+from experience import (SHARE_LABELS, detect_ministry_action,
+                        extract_people_count)
 from i18n import STRINGS, QUIZ_RIGHT, QUIZ_WRONG, get_lang, t
 from reports import generate_report
 
@@ -341,7 +344,20 @@ def training_lesson(level_id, number):
         gate_ctx = dict(level=lvl, lesson=les, prev_lesson=prev_les,
                         prev_level_id=prev[0], error=None)
         if mode == "affirmed" and refl and refl["did_homework"]:
-            return render_template("homework_gate.html", mode="affirmed", **gate_ctx)
+            ask_count = request.args.get("ask_count", type=int)
+            share_entry = share_label = None
+            if ask_count:
+                conn = db.get_db()
+                share_entry = conn.execute(
+                    "SELECT id FROM entries WHERE id = ? AND user_id = ? AND source = 'reflection'",
+                    (ask_count, uid)).fetchone()
+                conn.close()
+                if share_entry:
+                    lbl = request.args.get("share_label")
+                    share_label = lbl if lbl in SHARE_LABELS else "share_gospel"
+            return render_template("homework_gate.html", mode="affirmed",
+                                   ask_count=share_entry["id"] if share_entry else None,
+                                   share_label=share_label, **gate_ctx)
         if not refl or not refl["did_homework"]:
             show = "blocked" if mode == "blocked" else "form"
             return render_template("homework_gate.html", mode=show, **gate_ctx)
@@ -356,13 +372,15 @@ def training_lesson(level_id, number):
                            total=total, prev_n=prev_n, next_n=next_n,
                            questions=questions, quiz_done=qdone,
                            quiz_just_done=request.args.get("quiz_done"),
-                           feedback=fb)
+                           feedback=fb,
+                           illustrations=get_lesson_illustrations(level_id, number))
 
 
 @app.route("/training/<level_id>/<int:number>/reflect", methods=["POST"])
 @login_required
 def reflect_homework(level_id, number):
     uid = session["user_id"]
+    user = current_user()
     lang = get_lang(session)
     lvl = get_level(level_id)
     les = get_lesson(level_id, number)
@@ -383,15 +401,81 @@ def reflect_homework(level_id, number):
         conn.execute("UPDATE homework_reflections SET did_homework = ?, positive_experience = ?,"
                      " improve = ?, created_at = ? WHERE id = ?",
                      (1 if did else 0, positive, improve, db.now_iso(), existing["id"]))
+        refl_id = existing["id"]
     else:
         conn.execute("INSERT INTO homework_reflections (user_id, level_id, lesson_number, did_homework,"
                      " positive_experience, improve, created_at) VALUES (?,?,?,?,?,?,?)",
                      (uid, level_id, number, 1 if did else 0, positive, improve, db.now_iso()))
+        refl_id = conn.execute(
+            "SELECT id FROM homework_reflections WHERE user_id = ? AND level_id = ? AND lesson_number = ?",
+            (uid, level_id, number)).fetchone()["id"]
+
+    # Experience tracking: when the described experience mentions sharing the
+    # gospel (testimony, 3-Circles, ...), log it as an activity automatically
+    # so dashboard stats and donor reports pick it up without re-entry.
+    ask_count_entry = None
+    share_label = None
+    if did:
+        action = detect_ministry_action(positive + "\n" + improve)
+        if action:
+            atype, share_label = action
+            count = extract_people_count(positive + "\n" + improve)
+            notes = positive[:200]
+            loc = (user["field_location"] or "").strip()
+            linked = conn.execute(
+                "SELECT id, people_count FROM entries WHERE user_id = ? AND reflection_id = ?",
+                (uid, refl_id)).fetchone()
+            if linked:
+                conn.execute("UPDATE entries SET type = ?, notes = ? WHERE id = ?",
+                             (atype, notes, linked["id"]))
+                entry_id = linked["id"]
+                if not linked["people_count"] and count:
+                    conn.execute("UPDATE entries SET people_count = ? WHERE id = ?",
+                                 (count, entry_id))
+                elif not linked["people_count"]:
+                    ask_count_entry = entry_id
+            else:
+                conn.execute(
+                    "INSERT INTO entries (user_id, type, date, location, people_count, notes,"
+                    " follow_up, created_at, source, reflection_id)"
+                    " VALUES (?,?,?,?,?,?,?,?,?,?)",
+                    (uid, atype, date.today().isoformat(), loc, count or 0, notes,
+                     0, db.now_iso(), "reflection", refl_id))
+                entry_id = conn.execute(
+                    "SELECT id FROM entries WHERE user_id = ? AND reflection_id = ?"
+                    " ORDER BY id DESC LIMIT 1", (uid, refl_id)).fetchone()["id"]
+                if not count:
+                    ask_count_entry = entry_id
     conn.commit()
     conn.close()
     if did:
+        if ask_count_entry:
+            return redirect(url_for("training_lesson", level_id=level_id, number=number,
+                                    mode="affirmed", ask_count=ask_count_entry,
+                                    share_label=share_label))
         return redirect(url_for("training_lesson", level_id=level_id, number=number, mode="affirmed"))
     return redirect(url_for("training_lesson", level_id=level_id, number=number, mode="blocked"))
+
+
+@app.route("/training/<level_id>/<int:number>/count", methods=["POST"])
+@login_required
+def save_shared_count(level_id, number):
+    """Fill in the people count for an auto-logged reflection entry."""
+    uid = session["user_id"]
+    entry_id = request.form.get("entry_id", type=int)
+    try:
+        count = int(request.form.get("people_count") or 0)
+    except (TypeError, ValueError):
+        count = 0
+    if entry_id and count > 0:
+        conn = db.get_db()
+        own = conn.execute("SELECT id FROM entries WHERE id = ? AND user_id = ?",
+                           (entry_id, uid)).fetchone()
+        if own:
+            conn.execute("UPDATE entries SET people_count = ? WHERE id = ?", (count, entry_id))
+            conn.commit()
+        conn.close()
+    return redirect(url_for("training_lesson", level_id=level_id, number=number, mode="affirmed"))
 
 
 @app.route("/training/<level_id>/<int:number>/quiz", methods=["GET", "POST"])
@@ -558,7 +642,7 @@ def profile():
 
 @app.route("/health")
 def health():
-    return jsonify({"ok": True, "version": "2.1.1"})
+    return jsonify({"ok": True, "version": "2.2"})
 
 
 @app.route("/healthz")
