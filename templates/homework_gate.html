@@ -11,6 +11,19 @@
 </div>
 {% elif mode == "affirmed" %}
 <h1>&#x1f331; {{ t('gate_affirm_title') }}</h1>
+{% if ask_count %}
+<div class="card">
+  <h2>{{ t('count_title') }}</h2>
+  <p>{{ t('count_body', label=t(share_label)) }}</p>
+  <form method="post" action="{{ url_for('save_shared_count', level_id=level.id, number=lesson.number) }}">
+    <input type="hidden" name="entry_id" value="{{ ask_count }}">
+    <label for="people_count">{{ t('count_label') }}</label>
+    <input type="number" id="people_count" name="people_count" min="1" max="100000" required>
+    <button class="btn gold" type="submit">{{ t('count_save') }}</button>
+  </form>
+  <p class="mt"><a href="{{ url_for('training_lesson', level_id=level.id, number=lesson.number, mode='affirmed') }}">{{ t('count_skip') }}</a></p>
+</div>
+{% endif %}
 <div class="card">
   <p>{{ t('gate_affirm_body') }}</p>
   <p class="mt">

@@ -2,7 +2,8 @@
 {% block content %}
 <div class="authwrap">
   <div class="card">
-    <h1>&#x1f54a; {{ t('app_name') }}</h1>
+    <div class="logo-band"><img class="login-logo" src="{{ url_for('static', filename='img/ma-logo.png') }}" alt="MissionaryAgents"></div>
+    <h1 class="center">{{ t('app_name') }}</h1>
     <p class="sub">{{ t('tagline') }}</p>
     {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
     <form method="post">

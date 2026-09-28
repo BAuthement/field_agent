@@ -29,6 +29,7 @@
 <div class="entry">
   <span class="etype">{{ t('type_' + e.type) }}</span>
   {% if e.follow_up %}<span class="badge">{{ t('follow_up') }}</span>{% endif %}
+  {% if e.source == 'reflection' %}<span class="badge">{{ t('auto_logged') }}</span>{% endif %}
   <div class="meta">{{ e.date }}{% if e.location %} &middot; {{ e.location }}{% endif %}{% if e.people_count %} &middot; {{ e.people_count }}{% endif %}</div>
   {% if e.notes %}<div>{{ e.notes }}</div>{% endif %}
   <form method="post" action="{{ url_for('delete_entry', entry_id=e.id) }}" onsubmit="return confirm('{{ t('delete_confirm') }}')">

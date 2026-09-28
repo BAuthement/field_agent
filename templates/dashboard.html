@@ -17,6 +17,7 @@
     <div class="entry">
       <span class="etype">{{ t('type_' + e.type) }}</span>
       {% if e.follow_up %}<span class="badge">{{ t('follow_up') }}</span>{% endif %}
+      {% if e.source == 'reflection' %}<span class="badge">{{ t('auto_logged') }}</span>{% endif %}
       <div class="meta">{{ e.date }}{% if e.location %} &middot; {{ e.location }}{% endif %}{% if e.people_count %} &middot; {{ e.people_count }} {{ t('people_count')|lower }}{% endif %}</div>
       {% if e.notes %}<div>{{ e.notes[:160] }}{% if e.notes|length > 160 %}&hellip;{% endif %}</div>{% endif %}
     </div>
