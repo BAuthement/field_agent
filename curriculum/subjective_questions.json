@@ -1,0 +1,408 @@
+{
+ "level1:4": [
+  {
+   "anchor": "Who are all the people in your network?",
+   "donor_report": true,
+   "id": "l14-oikos-network",
+   "label_en": "People in your network",
+   "label_es": "Personas en tu red",
+   "names_first_only": true,
+   "section_en": "My Oikos",
+   "section_es": "Mi Oikos"
+  },
+  {
+   "anchor": "who are some of the people in your life who are far from God?",
+   "donor_report": true,
+   "id": "l14-oikos-far",
+   "label_en": "People in your life who are far from God",
+   "label_es": "Personas en tu vida lejos de Dios",
+   "names_first_only": true,
+   "section_en": "My Oikos",
+   "section_es": "Mi Oikos"
+  }
+ ],
+ "level2:9": [
+  {
+   "anchor": "Leadership: Is there someone who serves teaching and helping the people grow in Christ?",
+   "donor_report": true,
+   "id": "l29-health-leadership",
+   "label_en": "Leadership",
+   "label_es": "Liderazgo",
+   "names_first_only": false,
+   "section_en": "Church Health",
+   "section_es": "Salud de la iglesia"
+  },
+  {
+   "anchor": "Bible Study: Are the people gathering to study the Word of God together on a regular basis?",
+   "donor_report": true,
+   "id": "l29-health-bible",
+   "label_en": "Bible Study",
+   "label_es": "Estudio bíblico",
+   "names_first_only": false,
+   "section_en": "Church Health",
+   "section_es": "Salud de la iglesia"
+  },
+  {
+   "anchor": "Fellowship: Are the people spending time together on a regular basis?",
+   "donor_report": true,
+   "id": "l29-health-fellowship",
+   "label_en": "Fellowship",
+   "label_es": "Compañerismo",
+   "names_first_only": false,
+   "section_en": "Church Health",
+   "section_es": "Salud de la iglesia"
+  },
+  {
+   "anchor": "Baptism: Are the people repenting from sin, believing in Christ, and being baptized?",
+   "donor_report": true,
+   "id": "l29-health-baptism",
+   "label_en": "Baptism",
+   "label_es": "Bautismo",
+   "names_first_only": false,
+   "section_en": "Church Health",
+   "section_es": "Salud de la iglesia"
+  },
+  {
+   "anchor": "Communion: Are the people breaking bread together in memory of Christ?",
+   "donor_report": true,
+   "id": "l29-health-communion",
+   "label_en": "Communion",
+   "label_es": "Santa Cena",
+   "names_first_only": false,
+   "section_en": "Church Health",
+   "section_es": "Salud de la iglesia"
+  },
+  {
+   "anchor": "Worship: Are the people joining together for times to worship God?",
+   "donor_report": true,
+   "id": "l29-health-worship",
+   "label_en": "Worship",
+   "label_es": "Adoración",
+   "names_first_only": false,
+   "section_en": "Church Health",
+   "section_es": "Salud de la iglesia"
+  },
+  {
+   "anchor": "Pray: Are the people joining together for times of prayer?",
+   "donor_report": true,
+   "id": "l29-health-prayer",
+   "label_en": "Prayer",
+   "label_es": "Oración",
+   "names_first_only": false,
+   "section_en": "Church Health",
+   "section_es": "Salud de la iglesia"
+  },
+  {
+   "anchor": "Giving: Are the people sharing their time, skills, and money to help meet other’s needs?",
+   "donor_report": true,
+   "id": "l29-health-giving",
+   "label_en": "Giving",
+   "label_es": "Dar",
+   "names_first_only": false,
+   "section_en": "Church Health",
+   "section_es": "Salud de la iglesia"
+  },
+  {
+   "anchor": "Witness: Are the people going out to share the good news of Jesus with the lost?",
+   "donor_report": true,
+   "id": "l29-health-witness",
+   "label_en": "Witness",
+   "label_es": "Testimonio",
+   "names_first_only": false,
+   "section_en": "Church Health",
+   "section_es": "Salud de la iglesia"
+  },
+  {
+   "anchor": "Disciple: Are more people joining the group to learn the Word of God and grow in Christ?",
+   "donor_report": true,
+   "id": "l29-health-disciple",
+   "label_en": "Disciple-making",
+   "label_es": "Hacer discípulos",
+   "names_first_only": false,
+   "section_en": "Church Health",
+   "section_es": "Salud de la iglesia"
+  }
+ ],
+ "level3:6": [
+  {
+   "id": "l36-loc-where",
+   "anchor": "Explain where to find it on a map.",
+   "label_en": "Your target's location — where to find it on a map",
+   "label_es": "Ubicación de tu objetivo — dónde encontrarlo en el mapa",
+   "section_en": "Target Research",
+   "section_es": "Investigación del objetivo",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l36-loc-env",
+   "anchor": "Your description of the environment should include the size of the territory",
+   "label_en": "Your target's environment",
+   "label_es": "El entorno de tu objetivo",
+   "section_en": "Target Research",
+   "section_es": "Investigación del objetivo",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l36-ppl-pop",
+   "anchor": "population living at the location, their ethnicities",
+   "label_en": "Population and ethnicities",
+   "label_es": "Población y etnias",
+   "section_en": "Target Research",
+   "section_es": "Investigación del objetivo",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l36-ppl-family",
+   "anchor": "the typical size and structure of the family",
+   "label_en": "Family structure",
+   "label_es": "Estructura familiar",
+   "section_en": "Target Research",
+   "section_es": "Investigación del objetivo",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l36-lang-which",
+   "anchor": "their native dialects, other languages they speak",
+   "label_en": "Languages spoken",
+   "label_es": "Idiomas que hablan",
+   "section_en": "Target Research",
+   "section_es": "Investigación del objetivo",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l36-lang-literacy",
+   "anchor": "their ability to read and write, and whether a Bible is available in their language",
+   "label_en": "Literacy and Bible availability",
+   "label_es": "Alfabetización y disponibilidad de la Biblia",
+   "section_en": "Target Research",
+   "section_es": "Investigación del objetivo",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l36-rel-religions",
+   "anchor": "their primary religion, whether there is any fighting between their religions",
+   "label_en": "Religions represented",
+   "label_es": "Religiones representadas",
+   "section_en": "Target Research",
+   "section_es": "Investigación del objetivo",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l36-rel-christians",
+   "anchor": "whether there are any other Christians working among this Target people",
+   "label_en": "Other Christians working there",
+   "label_es": "Otros cristianos obrando allí",
+   "section_en": "Target Research",
+   "section_es": "Investigación del objetivo",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l36-eco-currency",
+   "anchor": "the type of employment they do to earn income, their currency",
+   "label_en": "Currency and income",
+   "label_es": "Moneda e ingresos",
+   "section_en": "Target Research",
+   "section_es": "Investigación del objetivo",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l36-eco-valuable",
+   "anchor": "what necessities are rare and most valuable to them",
+   "label_en": "What is most valuable to them",
+   "label_es": "Lo más valioso para ellos",
+   "section_en": "Target Research",
+   "section_es": "Investigación del objetivo",
+   "donor_report": true,
+   "names_first_only": false
+  }
+ ],
+ "level3:7": [
+  {
+   "id": "l37-tool-threat",
+   "anchor": "Does the tool appear threatening to their values?",
+   "label_en": "Does the tool threaten their values?",
+   "label_es": "¿La herramienta amenaza sus valores?",
+   "section_en": "Ministry Strategy",
+   "section_es": "Estrategia ministerial",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l37-tool-lang",
+   "anchor": "Can the tool be effectively communicated in their language or does it lose its effectiveness through translation?",
+   "label_en": "Can it be communicated in their language?",
+   "label_es": "¿Se puede comunicar en su idioma?",
+   "section_en": "Ministry Strategy",
+   "section_es": "Estrategia ministerial",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l37-tool-literate",
+   "anchor": "Are the people literate or should the tool use simple pictures instead of words?",
+   "label_en": "Literate, or pictures instead of words?",
+   "label_es": "¿Saben leer, o usar dibujos?",
+   "section_en": "Ministry Strategy",
+   "section_es": "Estrategia ministerial",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l37-strat-love",
+   "anchor": "How can you show God’s love to the people so that they can feel it?",
+   "label_en": "How will you show God's love so they feel it?",
+   "label_es": "¿Cómo mostrarás el amor de Dios para que lo sientan?",
+   "section_en": "Ministry Strategy",
+   "section_es": "Estrategia ministerial",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l37-strat-word",
+   "anchor": "How can you get the Word of God inside of the people so they come to faith?",
+   "label_en": "How will you get the Word inside them?",
+   "label_es": "¿Cómo pondrás la Palabra dentro de ellos?",
+   "section_en": "Ministry Strategy",
+   "section_es": "Estrategia ministerial",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l37-strat-pray",
+   "anchor": "How can you pray for the people so that God moves in their hearts?",
+   "label_en": "How will you pray so God moves?",
+   "label_es": "¿Cómo orarás para que Dios se mueva?",
+   "section_en": "Ministry Strategy",
+   "section_es": "Estrategia ministerial",
+   "donor_report": true,
+   "names_first_only": false
+  }
+ ],
+ "level3:9": [
+  {
+   "id": "l39-burn-hours",
+   "anchor": "How many hours are they working a week?",
+   "label_en": "Hours worked per week",
+   "label_es": "Horas de trabajo por semana",
+   "section_en": "Team Health",
+   "section_es": "Salud del equipo",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l39-burn-school",
+   "anchor": "Are they in school?",
+   "label_en": "In school?",
+   "label_es": "¿Estudian?",
+   "section_en": "Team Health",
+   "section_es": "Salud del equipo",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l39-burn-family",
+   "anchor": "Are they single, married, or raising children?",
+   "label_en": "Single, married, or raising children?",
+   "label_es": "¿Solteros, casados o criando hijos?",
+   "section_en": "Team Health",
+   "section_es": "Salud del equipo",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l39-burn-ministry",
+   "anchor": "Do they serve on other ministries?",
+   "label_en": "Serving on other ministries?",
+   "label_es": "¿Sirven en otros ministerios?",
+   "section_en": "Team Health",
+   "section_es": "Salud del equipo",
+   "donor_report": true,
+   "names_first_only": false
+  }
+ ],
+ "level3:11": [
+  {
+   "id": "l311-time",
+   "anchor": "Time: How can your Team invest its time more effectively?",
+   "label_en": "Invest time more effectively",
+   "label_es": "Invertir el tiempo con más eficacia",
+   "section_en": "Stewardship",
+   "section_es": "Mayordomía",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l311-team",
+   "anchor": "Team: How can your Team work together more effectively in the Target?",
+   "label_en": "Work together more effectively",
+   "label_es": "Trabajar juntos con más eficacia",
+   "section_en": "Stewardship",
+   "section_es": "Mayordomía",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l311-treasure",
+   "anchor": "Treasure: How can your Team raise funds and invest it more effectively?",
+   "label_en": "Raise and invest funds more effectively",
+   "label_es": "Recaudar e invertir fondos con más eficacia",
+   "section_en": "Stewardship",
+   "section_es": "Mayordomía",
+   "donor_report": true,
+   "names_first_only": false
+  }
+ ],
+ "level3:12": [
+  {
+   "id": "l312-howmuch",
+   "anchor": "How much money will it take?",
+   "label_en": "How much money will it take?",
+   "label_es": "¿Cuánto dinero se necesitará?",
+   "section_en": "Fundraising",
+   "section_es": "Recaudación de fondos",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l312-howlong",
+   "anchor": "How long do you think it will take to achieve your goals with this money?",
+   "label_en": "How long to achieve your goals?",
+   "label_es": "¿Cuánto tiempo para lograr las metas?",
+   "section_en": "Fundraising",
+   "section_es": "Recaudación de fondos",
+   "donor_report": true,
+   "names_first_only": false
+  },
+  {
+   "id": "l312-benefits",
+   "anchor": "What are the benefits of giving?",
+   "label_en": "Benefits of giving",
+   "label_es": "Beneficios de dar",
+   "section_en": "Fundraising",
+   "section_es": "Recaudación de fondos",
+   "donor_report": true,
+   "names_first_only": false
+  }
+ ],
+ "level1:0": [
+  {
+   "id": "l10-romans109-opinion",
+   "anchor": "Read Romans 10:9. What do you think it means to confess Jesus as your Lord?",
+   "label_en": "What do you think it means to confess Jesus as your Lord? (Romans 10:9)",
+   "label_es": "¿Qué crees que significa confesar a Jesús como tu Señor? (Romanos 10:9)",
+   "section_en": "The Gospel of Salvation",
+   "section_es": "El Evangelio de Salvación",
+   "donor_report": true,
+   "names_first_only": false
+  }
+ ]
+}

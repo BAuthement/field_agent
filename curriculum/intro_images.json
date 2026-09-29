@@ -1,0 +1,26 @@
+{
+ "level1:0": [
+  {
+   "image": "intro_l1_seed_sower.png",
+   "anchor": "Seed Sower: This picture shows seeds scattered everywhere.",
+   "alt": "Seed Sower progression illustration",
+   "caption": ""
+  }
+ ],
+ "level2:0": [
+  {
+   "image": "intro_l2_church_planter.png",
+   "anchor": "CHURCH PLANTER: This picture shows one solid dot.",
+   "alt": "Church Planter progression illustration",
+   "caption": ""
+  }
+ ],
+ "level3:0": [
+  {
+   "image": "intro_l3_church_multiplier.png",
+   "anchor": "CHURCH MULTIPLIER: This picture shows you leading a church planting movement.",
+   "alt": "Church Multiplier progression illustration",
+   "caption": ""
+  }
+ ]
+}

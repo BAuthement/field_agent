@@ -7090,6 +7090,81 @@
     "Esconderla para que nadie robe la idea."
    ],
    "answer": 0
+  },
+  {
+   "q_en": "Looking at the example team's Brutal Impact and Church Map, what would you say are that team's strengths and weaknesses?",
+   "q_es": "Mirando el Impacto Brutal y el Mapa de Iglesias del equipo de ejemplo, ¿cuáles dirías que son las fortalezas y debilidades de ese equipo?",
+   "options_en": [
+    "They share the gospel consistently with growing salvations and multiplying churches, but have no Level 4–5 leaders and no third-generation churches yet",
+    "They have strong leaders at every level but struggle to share the gospel",
+    "They have a great potluck ministry but weak parking-lot evangelism"
+   ],
+   "options_es": [
+    "Comparten el evangelio consistentemente con salvaciones crecientes e iglesias multiplicándose, pero no tienen líderes de Nivel 4–5 ni iglesias de tercera generación todavía",
+    "Tienen líderes fuertes en todos los niveles pero les cuesta compartir el evangelio",
+    "Tienen un gran ministerio de comidas compartidas pero una débil evangelización en el estacionamiento"
+   ],
+   "answer": 0
+  },
+  {
+   "q_en": "What are the example team's strengths?",
+   "q_es": "¿Cuáles son las fortalezas del equipo de ejemplo?",
+   "options_en": [
+    "High monthly income, large church attendance, many Level 5 leaders",
+    "Great coffee, comfortable chairs, short sermons",
+    "Consistent gospel sharing (~200/month), growing salvations and baptisms, churches multiplying to the second generation"
+   ],
+   "options_es": [
+    "Alto ingreso mensual, gran asistencia a la iglesia, muchos líderes de Nivel 5",
+    "Buen café, sillas cómodas, sermones cortos",
+    "Compartir el evangelio consistentemente (~200 al mes), salvaciones y bautismos crecientes, iglesias multiplicándose hasta la segunda generación"
+   ],
+   "answer": 2
+  },
+  {
+   "q_en": "What are the example team's weaknesses?",
+   "q_es": "¿Cuáles son las debilidades del equipo de ejemplo?",
+   "options_en": [
+    "Too many salvations, too much gospel sharing, too many churches",
+    "No Level 4 or 5 leaders, no third- or fourth-generation churches, inconsistent House of Peace",
+    "The chart is hard to read and the months are confusing"
+   ],
+   "options_es": [
+    "Demasiadas salvaciones, demasiado compartir el evangelio, demasiadas iglesias",
+    "Sin líderes de Nivel 4 o 5, sin iglesias de tercera o cuarta generación, Casa de Paz inconsistente",
+    "La tabla es difícil de leer y los meses son confusos"
+   ],
+   "answer": 1
+  },
+  {
+   "q_en": "What are three possible opportunities for the Parkland Pointe team?",
+   "q_es": "¿Cuáles son tres posibles oportunidades para el equipo de Parkland Pointe?",
+   "options_en": [
+    "Helping with felt needs to overcome fears and suspicions, so the Kurdish community will listen to the gospel",
+    "Building a bigger church building, hiring professional staff, starting a TV ministry",
+    "Moving the team to a different city with easier people"
+   ],
+   "options_es": [
+    "Ayudar con necesidades sentidas para superar miedos y sospechas, para que la comunidad kurda escuche el evangelio",
+    "Construir un edificio de iglesia más grande, contratar personal profesional, iniciar un ministerio de televisión",
+    "Mudar el equipo a una ciudad diferente con personas más fáciles"
+   ],
+   "answer": 0
+  },
+  {
+   "q_en": "What are three possible threats to the Parkland Pointe team, and how can they be handled?",
+   "q_es": "¿Cuáles son tres posibles amenazas para el equipo de Parkland Pointe, y cómo se pueden manejar?",
+   "options_en": [
+    "Bad weather — cancel all ministry when it rains",
+    "Mosquitoes — buy bug spray for the whole team",
+    "People and circumstances that hinder the work — win them over, neutralize them, defend against attacks, or go around them"
+   ],
+   "options_es": [
+    "Mal clima — cancelar todo el ministerio cuando llueve",
+    "Mosquitos — comprar repelente para todo el equipo",
+    "Personas y circunstancias que obstaculizan la obra — ganarlos, neutralizarlos, defenderse de sus ataques, o rodearlos"
+   ],
+   "answer": 2
   }
  ],
  "level3:11": [
@@ -7619,6 +7694,559 @@
     "Gastarlo lo más rápido posible."
    ],
    "answer": 0
+  }
+ ],
+ "level1:0": [
+  {
+   "q_en": "What is sin? (1 John 3:4)",
+   "q_es": "¿Qué es el pecado? (1 Juan 3:4)",
+   "options_en": [
+    "Feeling guilty about a mistake",
+    "Sinning against God — breaking His law",
+    "Eating too much dessert"
+   ],
+   "options_es": [
+    "Sentirse culpable por un error",
+    "Pecar contra Dios — quebrantar Su ley",
+    "Comer demasiado postre"
+   ],
+   "answer": 1
+  },
+  {
+   "q_en": "What are two reasons God sent His Son? (Romans 5:8)",
+   "q_es": "¿Cuáles son las dos razones por las que Dios envió a Su Hijo? (Romanos 5:8)",
+   "options_en": [
+    "Because God loves us, and to pay the penalty for our sins",
+    "Because God was angry, and to punish the world",
+    "Because Jesus wanted a vacation on earth"
+   ],
+   "options_es": [
+    "Porque Dios nos ama, y para pagar la pena de nuestros pecados",
+    "Porque Dios estaba enojado, y para castigar al mundo",
+    "Porque Jesús quería unas vacaciones en la tierra"
+   ],
+   "answer": 0
+  },
+  {
+   "q_en": "What did God exchange between you and Christ? (2 Corinthians 5:21)",
+   "q_es": "¿Qué intercambió Dios entre ti y Cristo? (2 Corintios 5:21)",
+   "options_en": [
+    "My money was put on Jesus, and His blessings were put on me",
+    "My birthday was exchanged with Jesus' birthday",
+    "My sins were put on Jesus, and His righteous life was put on me"
+   ],
+   "options_es": [
+    "Mi dinero fue puesto sobre Jesús, y Sus bendiciones fueron puestas sobre mí",
+    "Mi cumpleaños fue intercambiado con el cumpleaños de Jesús",
+    "Mis pecados fueron puestos sobre Jesús, y Su vida justa fue puesta sobre mí"
+   ],
+   "answer": 2
+  },
+  {
+   "q_en": "What are you now? (2 Corinthians 5:17)",
+   "q_es": "¿Qué eres ahora? (2 Corintios 5:17)",
+   "options_en": [
+    "A new creature in Christ",
+    "A better version of my old self",
+    "A professional fisherman"
+   ],
+   "options_es": [
+    "Una nueva criatura en Cristo",
+    "Una mejor versión de mi yo anterior",
+    "Un pescador profesional"
+   ],
+   "answer": 0
+  },
+  {
+   "q_en": "Who are you now? (2 Corinthians 5:20)",
+   "q_es": "¿Quién eres ahora? (2 Corintios 5:20)",
+   "options_en": [
+    "A tourist in the Kingdom of God",
+    "An ambassador for Christ",
+    "The mayor of heaven"
+   ],
+   "options_es": [
+    "Un turista en el Reino de Dios",
+    "Un embajador de Cristo",
+    "El alcalde del cielo"
+   ],
+   "answer": 1
+  },
+  {
+   "q_en": "What three things will happen in your life as you represent the Kingdom of God in this world?",
+   "q_es": "¿Qué tres cosas sucederán en tu vida al representar el Reino de Dios en este mundo?",
+   "options_en": [
+    "I will become famous, wealthy, and comfortable",
+    "I will grow wings, speak backwards, and turn invisible",
+    "God's Spirit will lead me, my faith will grow, and God will use my experiences to make me more like Christ"
+   ],
+   "options_es": [
+    "Me volveré famoso, rico y cómodo",
+    "Me crecerán alas, hablaré al revés y me volveré invisible",
+    "El Espíritu de Dios me guiará, mi fe crecerá, y Dios usará mis experiencias para hacerme más como Cristo"
+   ],
+   "answer": 2
+  },
+  {
+   "q_en": "What are the two things you must do in order for your life to change?",
+   "q_es": "¿Cuáles son las dos cosas que debes hacer para que tu vida cambie?",
+   "options_en": [
+    "Read the whole Bible in a week and never sin again",
+    "Embrace my new identity and spend quality time with Jesus every day",
+    "Move to another country and change my name"
+   ],
+   "options_es": [
+    "Leer toda la Biblia en una semana y nunca volver a pecar",
+    "Aceptar mi nueva identidad y pasar tiempo de calidad con Jesús cada día",
+    "Mudarse a otro país y cambiarse el nombre"
+   ],
+   "answer": 1
+  },
+  {
+   "q_en": "What is the Great Commission? (Matthew 28:18-20)",
+   "q_es": "¿Qué es la Gran Comisión? (Mateo 28:18-20)",
+   "options_en": [
+    "Jesus' marching orders to tell everyone about Him and teach believers to follow Him",
+    "A special offering collected for missionaries once a year",
+    "A parade the disciples held in Jerusalem"
+   ],
+   "options_es": [
+    "Las órdenes de marcha de Jesús para hablarles a todos de Él y enseñar a los creyentes a seguirlo",
+    "Una ofrenda especial que se recoge para los misioneros una vez al año",
+    "Un desfile que los discípulos hicieron en Jerusalén"
+   ],
+   "answer": 0
+  },
+  {
+   "q_en": "Why should we obey Christ's Great Commission?",
+   "q_es": "¿Por qué debemos obedecer la Gran Comisión de Cristo?",
+   "options_en": [
+    "Because missionaries get paid well for it",
+    "Because it is a good way to meet new friends",
+    "Our Lord commanded us to represent Him, and it is our identity and purpose"
+   ],
+   "options_es": [
+    "Porque a los misioneros les pagan bien por ello",
+    "Porque es una buena manera de conocer nuevos amigos",
+    "Nuestro Señor nos mandó a representarlo, y es nuestra identidad y propósito"
+   ],
+   "answer": 2
+  },
+  {
+   "q_en": "What does repentance mean, what will you do when you truly repent, and why is it so important?",
+   "q_es": "¿Qué significa el arrepentimiento, qué harás cuando te arrepientas de verdad, y por qué es tan importante?",
+   "options_en": [
+    "Feeling sorry — crying about my sins; it makes God feel better",
+    "Changing my mind — surrendering to Jesus as Lord and turning from sin; necessary for salvation and church membership",
+    "Saying sorry to my neighbor — mowing their lawn; it keeps the peace"
+   ],
+   "options_es": [
+    "Sentir remordimiento — llorar por mis pecados; hace que Dios se sienta mejor",
+    "Cambiar mi mente — rendirme a Jesús como Señor y apartarme del pecado; es necesario para la salvación y la membresía de la iglesia",
+    "Pedir perdón a mi vecino — cortarle el césped; mantiene la paz"
+   ],
+   "answer": 1
+  },
+  {
+   "q_en": "What is the responsibility God gave to you? (2 Corinthians 5:18)",
+   "q_es": "¿Cuál es la responsabilidad que Dios te dio? (2 Corintios 5:18)",
+   "options_en": [
+    "The ministry of reconciliation — sharing the gospel and bringing people into relationship with God",
+    "The ministry of church maintenance — keeping the building clean",
+    "The ministry of snack preparation — bringing donuts on Sunday"
+   ],
+   "options_es": [
+    "El ministerio de la reconciliación — compartir el evangelio y llevar a las personas a una relación con Dios",
+    "El ministerio de mantenimiento de la iglesia — mantener limpio el edificio",
+    "El ministerio de preparación de bocadillos — llevar donas el domingo"
+   ],
+   "answer": 0
+  }
+ ],
+ "level2:0": [
+  {
+   "q_en": "How should everything we do, be done?",
+   "q_es": "¿Cómo debe hacerse todo lo que hacemos?",
+   "options_en": [
+    "In accord with the nature of God — as imitators of God, His beloved children",
+    "However we feel is best in the moment",
+    "With as much paperwork as possible"
+   ],
+   "options_es": [
+    "De acuerdo con la naturaleza de Dios — como imitadores de Dios, Sus hijos amados",
+    "Como nos parezca mejor en el momento",
+    "Con la mayor cantidad de papeleo posible"
+   ],
+   "answer": 0,
+   "source": "“Everything we do must be done in accord with the nature of God, ‘Therefore, be imitators of God, as beloved children’ (Eph 5:1).”"
+  },
+  {
+   "q_en": "Why should Disciples live together in community?",
+   "q_es": "¿Por qué los discípulos deben vivir juntos en comunidad?",
+   "options_en": [
+    "Because it is easier to organize potlucks together",
+    "Because living alone is illegal",
+    "Because God created mankind in His own image and likeness — just as Father, Son, and Spirit are One, we are one Body in Christ"
+   ],
+   "options_es": [
+    "Porque es más fácil organizar comidas compartidas juntos",
+    "Porque vivir solo es ilegal",
+    "Porque Dios creó a la humanidad a Su imagen y semejanza — así como el Padre, el Hijo y el Espíritu son Uno, nosotros somos un Cuerpo en Cristo"
+   ],
+   "answer": 2,
+   "source": "“Just as the Father, Son, and Spirit are One, so the children of God are one Body in Christ (1Cor 10:17; 12:12-13). Therefore, Disciples should live in community with God because God created mankind in His own image and likeness.”"
+  },
+  {
+   "q_en": "What does the word “Church” actually mean?",
+   "q_es": "¿Qué significa realmente la palabra “Iglesia”?",
+   "options_en": [
+    "A beautiful building with stained glass windows",
+    "Assembly (from the Greek word ekklesia)",
+    "A weekly neighborhood parade"
+   ],
+   "options_es": [
+    "Un edificio hermoso con vitrales",
+    "Asamblea (del griego ekklesia)",
+    "Un desfile semanal del vecindario"
+   ],
+   "answer": 1,
+   "source": "“The word ‘Church’ in the original Greek (ekklesia), actually means ‘assembly.’”"
+  },
+  {
+   "q_en": "In reference to Christianity, how does God create Churches?",
+   "q_es": "En referencia al cristianismo, ¿cómo crea Dios las iglesias?",
+   "options_en": [
+    "God sends a herald of the gospel to call people out of the world and into the Kingdom of Christ",
+    "God appoints a committee to vote on a church name",
+    "God mails everyone a church membership card"
+   ],
+   "options_es": [
+    "Dios envía un heraldo del evangelio para llamar a las personas del mundo al Reino de Cristo",
+    "Dios nombra un comité para votar el nombre de la iglesia",
+    "Dios envía por correo una tarjeta de membresía a todos"
+   ],
+   "answer": 0,
+   "source": "“God sends a herald of the gospel to call people out of the world and into the Kingdom of Christ (Rom 10:13-17).”"
+  },
+  {
+   "q_en": "What did Jesus pray for His Disciples?",
+   "q_es": "¿Por qué oró Jesús por Sus discípulos?",
+   "options_en": [
+    "That they would all become wealthy",
+    "That it would never rain on Sundays",
+    "That we would all be one together with God"
+   ],
+   "options_es": [
+    "Que todos se volvieran ricos",
+    "Que nunca lloviera los domingos",
+    "Que todos fuéramos uno junto con Dios"
+   ],
+   "answer": 2,
+   "source": "“Jesus prayed for His Disciples, that we would all be one together with God (John 17:20-24).”"
+  },
+  {
+   "q_en": "How did Jesus make Disciples?",
+   "q_es": "¿Cómo hizo Jesús discípulos?",
+   "options_en": [
+    "Through large stadium rallies only",
+    "In small assemblies (small groups)",
+    "By sending them text messages"
+   ],
+   "options_es": [
+    "Solo a través de grandes eventos en estadios",
+    "En pequeñas asambleas (grupos pequeños)",
+    "Enviándoles mensajes de texto"
+   ],
+   "answer": 1,
+   "source": "“Nevertheless, Jesus made Disciples in small assemblies.”"
+  },
+  {
+   "q_en": "What do Disciples gather in small groups to do?",
+   "q_es": "¿Para qué se reúnen los discípulos en grupos pequeños?",
+   "options_en": [
+    "Fellowship, discipleship, prayer, worship, and missions work",
+    "Watch movies, play games, and plan vacations",
+    "Practice circus tricks for the talent show"
+   ],
+   "options_es": [
+    "Compañerismo, discipulado, oración, adoración y obra misionera",
+    "Ver películas, jugar y planear vacaciones",
+    "Practicar trucos de circo para el concurso de talentos"
+   ],
+   "answer": 0,
+   "source": "“Small groups met for fellowship, discipleship, prayer, worship, and missions work.”"
+  },
+  {
+   "q_en": "Why is a small group effective for helping people change their lives?",
+   "q_es": "¿Por qué un grupo pequeño es efectivo para ayudar a las personas a cambiar sus vidas?",
+   "options_en": [
+    "Because small groups are cheaper than therapy",
+    "Because small rooms have better Wi-Fi",
+    "Most people who come to Christ have many struggles and need a loving support network to help them overcome their past"
+   ],
+   "options_es": [
+    "Porque los grupos pequeños son más baratos que la terapia",
+    "Porque las habitaciones pequeñas tienen mejor Wi-Fi",
+    "La mayoría de las personas que vienen a Cristo tienen muchas luchas y necesitan una red de apoyo amorosa para superar su pasado"
+   ],
+   "answer": 2,
+   "source": "“A small group is one of the most effective ways for helping people change their lives. This is because most people who come to Christ have many struggles and need a loving support network to help them overcome their past.”"
+  },
+  {
+   "q_en": "What could happen to people if we do not receive them with the love of Christ?",
+   "q_es": "¿Qué les podría pasar a las personas si no las recibimos con el amor de Cristo?",
+   "options_en": [
+    "They will politely ask for a refund",
+    "They will be tempted to go back to their old friends and return to a life of sin",
+    "They will turn into pumpkins at midnight"
+   ],
+   "options_es": [
+    "Pedirán cortésmente un reembolso",
+    "Serán tentadas a volver con sus viejos amigos y regresar a una vida de pecado",
+    "Se convertirán en calabazas a la medianoche"
+   ],
+   "answer": 1,
+   "source": "“If they are not received with the love of Christ, they will be tempted to go back to their old friends and return to a life of sin.”"
+  },
+  {
+   "q_en": "What happens to us as we walk together with Christ?",
+   "q_es": "¿Qué nos sucede al caminar juntos con Cristo?",
+   "options_en": [
+    "Our flaws will be replaced with Christ-like character over time",
+    "We will all become famous preachers",
+    "We will learn to walk on water instantly"
+   ],
+   "options_es": [
+    "Nuestros defectos serán reemplazados con el carácter de Cristo con el tiempo",
+    "Todos nos volveremos predicadores famosos",
+    "Aprenderemos a caminar sobre el agua al instante"
+   ],
+   "answer": 0,
+   "source": "“As we all walk together with Christ those flaws that we all have will be replaced with Christ-like character over time.”"
+  },
+  {
+   "q_en": "What do most people think the Church is?",
+   "q_es": "¿Qué piensa la mayoría de las personas que es la Iglesia?",
+   "options_en": [
+    "A social club for nice people",
+    "A restaurant that serves communion wafers",
+    "A place or building"
+   ],
+   "options_es": [
+    "Un club social para personas amables",
+    "Un restaurante que sirve obleas de comunión",
+    "Un lugar o un edificio"
+   ],
+   "answer": 2,
+   "source": "“Most people think of a Church as a place or building. But it is not a place or a building.”"
+  },
+  {
+   "q_en": "What is the Church?",
+   "q_es": "¿Qué es la Iglesia?",
+   "options_en": [
+    "A denomination's headquarters office",
+    "The people God called out of the world into the Kingdom of Christ",
+    "A really big collection of choir robes"
+   ],
+   "options_es": [
+    "La oficina central de una denominación",
+    "Las personas que Dios llamó del mundo al Reino de Cristo",
+    "Una colección muy grande de túnicas de coro"
+   ],
+   "answer": 1,
+   "source": "“The Church is the people who God called out of the world into the Kingdom of Christ.”"
+  },
+  {
+   "q_en": "What are two reasons why the smallest size of a Church is two believers?",
+   "q_es": "¿Cuáles son las dos razones por las que el tamaño más pequeño de una iglesia es dos creyentes?",
+   "options_en": [
+    "It takes a minimum of two to form an assembly, and Jesus said wherever two or more are gathered in His name He is in their midst (Matt 18:20)",
+    "One person gets lonely, and three is a crowd",
+    "Two can split the pizza bill evenly"
+   ],
+   "options_es": [
+    "Se necesitan mínimo dos para formar una asamblea, y Jesús dijo que donde dos o más se reúnan en Su nombre, Él estará en medio de ellos (Mateo 18:20)",
+    "Una persona se siente sola, y tres son multitud",
+    "Dos pueden dividir la cuenta de la pizza en partes iguales"
+   ],
+   "answer": 0,
+   "source": "“The smallest size a Church can be is two believers because it takes a minimum of two to form an assembly, and Jesus said wherever two or more are gathered in His name He will be in their midst (Matt 18:20).”"
+  },
+  {
+   "q_en": "How many marks must a Disciple group have in order to become a true Church?",
+   "q_es": "¿Cuántas marcas debe tener un grupo de discípulos para llegar a ser una verdadera iglesia?",
+   "options_en": [
+    "Seven marks",
+    "One hundred marks",
+    "Two primary marks"
+   ],
+   "options_es": [
+    "Siete marcas",
+    "Cien marcas",
+    "Dos marcas principales"
+   ],
+   "answer": 2,
+   "source": "“There are two primary marks that a group of Disciples must have to become a true Church.”"
+  },
+  {
+   "q_en": "What is the first mark of a true Church?",
+   "q_es": "¿Cuál es la primera marca de una verdadera iglesia?",
+   "options_en": [
+    "A fancy church sign out front",
+    "The right teaching and learning of God's Word",
+    "Matching t-shirts for everyone"
+   ],
+   "options_es": [
+    "Un elegante letrero frente a la iglesia",
+    "La correcta enseñanza y aprendizaje de la Palabra de Dios",
+    "Camisetas iguales para todos"
+   ],
+   "answer": 1,
+   "source": "“The first mark is the right teaching and learning of God's Word.”"
+  },
+  {
+   "q_en": "What is the second mark of a true Church?",
+   "q_es": "¿Cuál es la segunda marca de una verdadera iglesia?",
+   "options_en": [
+    "The right practice of baptism and communion",
+    "The right brand of coffee in the lobby",
+    "The right kind of carpet in the sanctuary"
+   ],
+   "options_es": [
+    "La correcta práctica del bautismo y la comunión",
+    "La marca correcta de café en el vestíbulo",
+    "El tipo correcto de alfombra en el santuario"
+   ],
+   "answer": 0,
+   "source": "“The second mark is the right practice of baptism and communion. It is this second mark that turns a House of Peace into a local Church.”"
+  },
+  {
+   "q_en": "How many pastors should be leading a local Church?",
+   "q_es": "¿Cuántos pastores deben dirigir una iglesia local?",
+   "options_en": [
+    "Exactly twelve pastors, like the twelve apostles",
+    "Zero pastors — churches run themselves",
+    "At least one pastor, but preferably two or more"
+   ],
+   "options_es": [
+    "Exactamente doce pastores, como los doce apóstoles",
+    "Cero pastores — las iglesias se dirigen solas",
+    "Al menos un pastor, pero preferiblemente dos o más"
+   ],
+   "answer": 2,
+   "source": "“Each Church will have at least one pastor, but preferably two or more pastors who are working together.”"
+  },
+  {
+   "q_en": "What are the pastor's responsibilities?",
+   "q_es": "¿Cuáles son las responsabilidades del pastor?",
+   "options_en": [
+    "To make sure the air conditioning works on Sundays",
+    "To help members of the Church trust, love, and obey God",
+    "To count the offering and keep it all"
+   ],
+   "options_es": [
+    "Asegurarse de que el aire acondicionado funcione los domingos",
+    "Ayudar a los miembros de la iglesia a confiar, amar y obedecer a Dios",
+    "Contar la ofrenda y quedársela toda"
+   ],
+   "answer": 1,
+   "source": "“Their responsibility is to help members of the Church trust, love, and obey God.”"
+  },
+  {
+   "q_en": "What are the three basic functions of a Church?",
+   "q_es": "¿Cuáles son las tres funciones básicas de una iglesia?",
+   "options_en": [
+    "Spread the gospel, make Disciples, and worship God",
+    "Fundraise, advertise, and expand the parking lot",
+    "Bake, decorate, and nap"
+   ],
+   "options_es": [
+    "Predicar el evangelio, hacer discípulos y adorar a Dios",
+    "Recaudar fondos, hacer publicidad y ampliar el estacionamiento",
+    "Hornear, decorar y dormir la siesta"
+   ],
+   "answer": 0,
+   "source": "“There are three basic functions of the Church: spread the gospel, make Disciples, and worship God.”"
+  },
+  {
+   "q_en": "What is the first difference between a healthy and an unhealthy Church?",
+   "q_es": "¿Cuál es la primera diferencia entre una iglesia sana y una no sana?",
+   "options_en": [
+    "How big the church building is",
+    "What color the pews are",
+    "How sincerely the members are surrendered to Christ as Lord — a healthy Church loves God, loves others, and works to change the world"
+   ],
+   "options_es": [
+    "Qué tan grande es el edificio de la iglesia",
+    "De qué color son los bancos",
+    "Cuán sinceramente los miembros están rendidos a Cristo como Señor — una iglesia sana ama a Dios, ama a otros y trabaja para cambiar el mundo"
+   ],
+   "answer": 2,
+   "source": "“The difference between a healthy and an unhealthy Church is determined by how sincerely the members are surrendered to Christ as Lord. A healthy Church loves God, loves others, and works to change the world.”"
+  },
+  {
+   "q_en": "What are the ten areas that a healthy Church will thrive?",
+   "q_es": "¿Cuáles son las diez áreas en las que prosperará una iglesia sana?",
+   "options_en": [
+    "Catering, landscaping, interior design, and social media",
+    "Leadership, Bible study, baptism, communion, prayer, worship, witnessing, giving, and discipleship",
+    "Juggling, magic tricks, karaoke, and yoga"
+   ],
+   "options_es": [
+    "Catering, jardinería, diseño de interiores y redes sociales",
+    "Liderazgo, estudio bíblico, bautismo, comunión, oración, adoración, testimonio, ofrendas y discipulado",
+    "Malabares, trucos de magia, karaoke y yoga"
+   ],
+   "answer": 1,
+   "source": "“As the members walk in step with the Spirit they will thrive in at least ten areas: leadership, Bible study, baptism, communion, prayer, worship, witnessing, giving, and discipleship.”"
+  },
+  {
+   "q_en": "What is the second difference between an unhealthy and a healthy Church?",
+   "q_es": "¿Cuál es la segunda diferencia entre una iglesia no sana y una iglesia sana?",
+   "options_en": [
+    "Procreation",
+    "The number of committees",
+    "The thread count of the tablecloths"
+   ],
+   "options_es": [
+    "La procreación",
+    "El número de comités",
+    "El número de hilos de los manteles"
+   ],
+   "answer": 0,
+   "source": "“The second difference between an unhealthy Church and a healthy Church is procreation.”"
+  },
+  {
+   "q_en": "What should each Church grow up to do?",
+   "q_es": "¿Qué debe hacer cada iglesia al crecer?",
+   "options_en": [
+    "Grow up and merge with a bigger church",
+    "Grow up and retire to Florida",
+    "Grow up and give birth to other Churches"
+   ],
+   "options_es": [
+    "Crecer y fusionarse con una iglesia más grande",
+    "Crecer y jubilarse en Florida",
+    "Crecer y dar a luz a otras iglesias"
+   ],
+   "answer": 2,
+   "source": "“Just as a healthy child should grow up to be fruitful, multiply, and fill the earth, each Church should grow up and give birth to other Churches.”"
+  },
+  {
+   "q_en": "What does this second difference depend on?",
+   "q_es": "¿De qué depende esta segunda diferencia?",
+   "options_en": [
+    "The weather on planting day",
+    "The first difference — that Christ is Lord of the Church",
+    "Whether the neighbors approve"
+   ],
+   "options_es": [
+    "Del clima el día de la plantación",
+    "De la primera diferencia — que Cristo es el Señor de la iglesia",
+    "De si los vecinos están de acuerdo"
+   ],
+   "answer": 1,
+   "source": "“This second difference depends on the first, that Christ is Lord of the Church.”"
   }
  ]
 }
