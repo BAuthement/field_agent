@@ -13,6 +13,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import db
 from assistant import answer as assistant_answer
 from curriculum import (get_curriculum, get_lesson, get_lesson_illustrations,
+                        get_lesson_body_html,
                         get_level, get_quiz,
                         get_gates, gate_key_for, prev_lesson_key, prev_level_with_lessons)
 from experience import (SHARE_LABELS, detect_ministry_action,
@@ -368,11 +369,13 @@ def training_lesson(level_id, number):
     prev_n = number - 1 if number > 1 else None
     next_n = number + 1 if number < total else None
     fb = session.pop("quiz_feedback", None)
+    lang = get_lang(session)
+    body_html = get_lesson_body_html(level_id, number, t("step_caption", lang))
     return render_template("training_lesson.html", level=lvl, lesson=les, done=done,
                            total=total, prev_n=prev_n, next_n=next_n,
                            questions=questions, quiz_done=qdone,
                            quiz_just_done=request.args.get("quiz_done"),
-                           feedback=fb,
+                           feedback=fb, body_html=body_html,
                            illustrations=get_lesson_illustrations(level_id, number))
 
 

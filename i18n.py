@@ -157,6 +157,7 @@ STRINGS = {
     "lgate_go_prev": {"en": "\u2190 Back to {prev}", "es": "\u2190 Volver a {prev}"},
     "illus_title": {"en": "Example illustration \u2014 draw yours like this", "es": "Ilustraci\u00f3n de ejemplo \u2014 dibuja la tuya as\u00ed"},
     "illus_sub": {"en": "Study this model, then practice drawing the tool yourself until you can do it from memory.", "es": "Estudia este modelo, luego practica dibujar la herramienta hasta que puedas hacerlo de memoria."},
+    "step_caption": {"en": "Draw it step by step \u2014 your drawing should look like this now", "es": "Dib\u00fajalo paso a paso \u2014 tu dibujo debe verse as\u00ed ahora"},
 }
 
 # Feedback message pools: warm, dignified, never condescending. Picked at
