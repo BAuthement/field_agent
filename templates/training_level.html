@@ -7,7 +7,7 @@
   {% for item in lessons %}
   <a class="lesson-link" href="{{ url_for('training_lesson', level_id=level.id, number=item.lesson.number) }}">
     {% if item.done %}<span class="done">&#x2713;</span>{% endif %}
-    {{ t('lesson_of', n=item.lesson.number, total=level.lesson_count) }}: {{ item.lesson.title }}
+    {% if item.lesson.number == 0 %}{{ t('intro_title') }}{% else %}{{ t('lesson_of', n=item.lesson.number, total=level.lesson_count) }}: {{ item.lesson.title }}{% endif %}
   </a>
   {% endfor %}
 </div>

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <a href="{{ url_for('training_level', level_id=level.id) }}">{{ t('back_to_levels') }}</a>
-<h1>{{ t('lesson_of', n=lesson.number, total=total) }}: {{ lesson.title }}</h1>
+{% if is_intro %}<h1>{{ t('intro_title') }}</h1>{% else %}<h1>{{ t('lesson_of', n=lesson.number, total=total) }}: {{ lesson.title }}</h1>{% endif %}
 <p class="sub">{{ level.number }}: {{ level.name }}</p>
 {% if quiz_just_done %}
 <div class="alert">&#x2713; {{ t('quiz_done_banner') }}</div>
@@ -9,6 +9,31 @@
 {% if feedback %}
 <div class="alert{% if not feedback.ok %} warn{% endif %}">{{ feedback.msg }}</div>
 {% endif %}
+{% if lookback_gate %}
+<div class="card highlight">
+  <h3>&#x1f50d; {{ t('lookback_title') }}</h3>
+  {% if lb_blocked %}
+  <div class="alert warn"><strong>{{ t('gate_blocked_title') }}</strong><br>{{ t('gate_blocked_body') }}</div>
+  {% endif %}
+  {% if lb_error == 'yn' %}
+  <div class="alert warn">{{ t('lb_err_yn') }}</div>
+  {% endif %}
+  {% if lb_error == 'text' %}
+  <div class="alert warn">{{ t('lb_err_text') }}</div>
+  {% endif %}
+  <form method="post" action="{{ url_for('save_lookback', level_id=level.id, number=lesson.number) }}">
+    {% if lesson.number >= 2 %}
+    <p><strong>{{ t('lookback_did_goal') }}</strong></p>
+    <label><input type="radio" name="did_homework" value="yes"{% if lb_resp and lb_resp.did_homework == 1 %} checked{% endif %}> {{ t('yes') }}</label>
+    <label><input type="radio" name="did_homework" value="no"{% if lb_resp and lb_resp.did_homework == 0 %} checked{% endif %}> {{ t('no') }}</label>
+    {% endif %}
+    <div class="lesson-body mt">{{ body_html|safe }}</div>
+    <label for="lb_answer"><strong>{{ t('lookback_describe') }}</strong></label>
+    <textarea id="lb_answer" name="answer_text" rows="4" placeholder="{{ t('answer_ph') }}">{{ lb_resp.answer_text if lb_resp else '' }}</textarea>
+    <button class="btn gold" type="submit">{{ t('lookback_continue') }}</button>
+  </form>
+</div>
+{% else %}
 <div class="card">
   <div class="lesson-body">{{ body_html|safe }}</div>
   {% if lesson.look_forward %}
@@ -38,6 +63,23 @@
   {% endif %}
 </div>
 {% endif %}
+{% if ask_count %}
+<div class="card highlight">
+  <p><strong>{{ t('count_title') }}</strong></p>
+  <form method="post" action="{{ url_for('save_shared_count', level_id=level.id, number=lesson.number) }}">
+    <input type="hidden" name="entry_id" value="{{ ask_count }}">
+    <input type="number" name="people_count" min="1" required style="width:90px" placeholder="0">
+    <button class="btn gold" type="submit">{{ t('count_save') }}</button>
+  </form>
+</div>
+{% endif %}
+{% if unanswered %}
+<div class="alert warn" id="lesson-complete">{{ t('boxes_required_note') }}</div>
+<form method="post" action="{{ url_for('toggle_lesson', level_id=level.id, number=lesson.number) }}">
+  {% if done %}<div class="alert">&#x2713; {{ t('completed') }}</div>{% endif %}
+  <button class="btn gold" type="submit" disabled style="opacity:.5">{{ t('mark_complete') }}</button>
+</form>
+{% else %}
 <form method="post" action="{{ url_for('toggle_lesson', level_id=level.id, number=lesson.number) }}">
   {% if done %}
     <div class="alert">&#x2713; {{ t('completed') }}</div>
@@ -49,6 +91,8 @@
     <button class="btn gold" type="submit"{% if questions and not quiz_done %} disabled{% endif %}>{{ t('mark_complete') }}</button>
   {% endif %}
 </form>
+{% endif %}
+{% endif %}
 <div class="mt" style="display:flex; justify-content:space-between;">
   {% if prev_n %}<a class="btn secondary" href="{{ url_for('training_lesson', level_id=level.id, number=prev_n) }}">{{ t('prev_lesson') }}</a>{% else %}<span></span>{% endif %}
   {% if next_n %}<a class="btn secondary" href="{{ url_for('training_lesson', level_id=level.id, number=next_n) }}">{{ t('next_lesson') }}</a>{% endif %}

@@ -27,4 +27,57 @@
     <a class="btn" href="{{ url_for('log_work') }}">{{ t('log_work') }}</a>
   {% endif %}
 </div>
+<div class="card mt" id="my-responses">
+  <h2>{{ t('my_responses') }}</h2>
+  <p class="sub">{{ t('my_responses_sub') }}</p>
+  {% if responses %}
+    {% set ns = namespace(section='') %}
+    {% for r in responses %}
+      {% set rsec = r.section_es if lang == 'es' else r.section_en %}
+      {% if rsec != ns.section %}
+        {% set ns.section = rsec %}
+        <h3 class="mt">{{ rsec }}</h3>
+      {% endif %}
+      <div class="entry" id="resp-{{ r.qid }}">
+        <div><strong>{{ r.label_es if lang == 'es' else r.label_en }}</strong></div>
+        <div class="meta">{{ r.lesson_title }}</div>
+        <div>{{ r.answer_text }}</div>
+        <form method="post" action="{{ url_for('save_response', level_id=r.level_id, number=r.lesson_number) }}" class="mt">
+          <input type="hidden" name="question_id" value="{{ r.qid }}">
+          <input type="hidden" name="next" value="dashboard">
+          <textarea name="answer" rows="2">{{ r.answer_text }}</textarea>
+          <button class="btn small gold" type="submit">{{ t('answer_submit') }}</button>
+        </form>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="sub">{{ t('responses_none') }}</p>
+  {% endif %}
+</div>
+<div class="card mt" id="my-lookbacks">
+  <h2>{{ t('my_lookbacks') }}</h2>
+  {% if lookbacks %}
+    {% for lb in lookbacks %}
+    <div class="entry" id="lb-{{ lb.level_id }}-{{ lb.lesson_number }}">
+      <div><strong>{{ lb.lesson_title }}</strong>
+        {% if lb.lesson_number >= 2 %}
+        <span class="badge">{% if lb.did_homework %}{{ t('yes') }}{% else %}{{ t('no') }}{% endif %}</span>
+        {% endif %}
+      </div>
+      <div>{{ lb.answer_text }}</div>
+      <form method="post" action="{{ url_for('save_lookback', level_id=lb.level_id, number=lb.lesson_number) }}" class="mt">
+        <input type="hidden" name="next" value="dashboard">
+        {% if lb.lesson_number >= 2 %}
+        <label><input type="radio" name="did_homework" value="yes"{% if lb.did_homework == 1 %} checked{% endif %}> {{ t('yes') }}</label>
+        <label><input type="radio" name="did_homework" value="no"{% if lb.did_homework == 0 %} checked{% endif %}> {{ t('no') }}</label>
+        {% endif %}
+        <textarea name="answer_text" rows="2">{{ lb.answer_text }}</textarea>
+        <button class="btn small gold" type="submit">{{ t('answer_submit') }}</button>
+      </form>
+    </div>
+    {% endfor %}
+  {% else %}
+    <p class="sub">{{ t('responses_none') }}</p>
+  {% endif %}
+</div>
 {% endblock %}
