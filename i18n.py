@@ -158,6 +158,23 @@ STRINGS = {
     "illus_title": {"en": "Example illustration \u2014 draw yours like this", "es": "Ilustraci\u00f3n de ejemplo \u2014 dibuja la tuya as\u00ed"},
     "illus_sub": {"en": "Study this model, then practice drawing the tool yourself until you can do it from memory.", "es": "Estudia este modelo, luego practica dibujar la herramienta hasta que puedas hacerlo de memoria."},
     "step_caption": {"en": "Draw it step by step \u2014 your drawing should look like this now", "es": "Dib\u00fajalo paso a paso \u2014 tu dibujo debe verse as\u00ed ahora"},
+    "intro_title": {"en": "Introduction", "es": "Introducci\u00f3n"},
+    "lookback_title": {"en": "Look Back \u2014 reflect before you continue", "es": "Mira Atr\u00e1s \u2014 reflexiona antes de continuar"},
+    "lookback_did_goal": {"en": "Did you complete last week's GOAL?", "es": "\u00bfCompletaste la META de la semana pasada?"},
+    "lookback_describe": {"en": "Describe your experience:", "es": "Describe tu experiencia:"},
+    "lookback_continue": {"en": "Continue \u2192", "es": "Continuar \u2192"},
+    "lb_err_yn": {"en": "Please choose Yes or No.", "es": "Elige S\u00ed o No."},
+    "lb_err_text": {"en": "Please write your reflection before continuing.", "es": "Escribe tu reflexi\u00f3n antes de continuar."},
+    "answer_ph": {"en": "Write your answer here", "es": "Escribe tu respuesta aqu\u00ed"},
+    "answer_submit": {"en": "Submit", "es": "Enviar"},
+    "answer_thanks": {"en": "Thank you \u2014 your answer was saved.", "es": "Gracias \u2014 tu respuesta fue guardada."},
+    "answer_required": {"en": "Please write an answer before submitting.", "es": "Escribe una respuesta antes de enviar."},
+    "boxes_required_note": {"en": "Answer each response box above before marking this lesson complete.", "es": "Responde cada casilla antes de marcar esta lecci\u00f3n como completada."},
+    "my_responses": {"en": "My Ministry Responses", "es": "Mis Respuestas Ministeriales"},
+    "my_responses_sub": {"en": "Your answers from the lessons \u2014 edit them here any time.", "es": "Tus respuestas de las lecciones \u2014 ed\u00edtalas aqu\u00ed cuando quieras."},
+    "responses_none": {"en": "No responses yet \u2014 they will appear here as you answer the questions in your lessons.", "es": "Sin respuestas a\u00fan \u2014 aparecer\u00e1n aqu\u00ed cuando respondas las preguntas de tus lecciones."},
+    "my_lookbacks": {"en": "Look Back Reflections", "es": "Reflexiones de Mira Atr\u00e1s"},
+    "edit_in_lesson": {"en": "Edit in lesson \u2192", "es": "Editar en la lecci\u00f3n \u2192"},
 }
 
 # Feedback message pools: warm, dignified, never condescending. Picked at
@@ -215,6 +232,7 @@ QUIZ_RIGHT = {
         "\u00a1Respuesta correcta! Te est\u00e1s equipando bien para la cosecha.",
     ],
 }
+
 
 
 def get_lang(session):

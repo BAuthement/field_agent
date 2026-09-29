@@ -73,6 +73,30 @@ CREATE TABLE IF NOT EXISTS level_gates (
     attested_at TEXT NOT NULL,
     PRIMARY KEY (user_id, level_id)
 );
+CREATE TABLE IF NOT EXISTS subjective_responses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    level_id TEXT NOT NULL,
+    lesson_number INTEGER NOT NULL,
+    question_id TEXT NOT NULL,
+    answer_text TEXT DEFAULT '',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    UNIQUE (user_id, level_id, lesson_number, question_id)
+);
+CREATE INDEX IF NOT EXISTS idx_subjresp_user ON subjective_responses(user_id);
+CREATE TABLE IF NOT EXISTS lookback_responses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    level_id TEXT NOT NULL,
+    lesson_number INTEGER NOT NULL,
+    did_homework INTEGER,
+    answer_text TEXT DEFAULT '',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    UNIQUE (user_id, level_id, lesson_number)
+);
+CREATE INDEX IF NOT EXISTS idx_lookback_user ON lookback_responses(user_id);
 """
 
 # Same tables, Postgres dialect (SERIAL instead of AUTOINCREMENT).
@@ -138,8 +162,44 @@ def init_db():
     conn = get_db()
     conn.executescript(SCHEMA_PG if USE_PG else SCHEMA_SQLITE)
     _ensure_entry_tracking_columns(conn)
+    _migrate_reflections_to_lookback(conn)
     conn.commit()
     conn.close()
+
+
+def _migrate_reflections_to_lookback(conn):
+    """One-time migration: the old 3-part post-lesson homework reflections
+    become per-lesson Look Back responses (same lesson number — both reflect
+    on the previous lesson's GOAL/homework). Runs only for rows not already
+    migrated."""
+    rows = conn.execute(
+        "SELECT hr.id, hr.user_id, hr.level_id, hr.lesson_number, hr.did_homework,"
+        " COALESCE(hr.positive_experience,'') AS pos, COALESCE(hr.improve,'') AS imp,"
+        " hr.created_at FROM homework_reflections hr"
+        " JOIN users u ON u.id = hr.user_id").fetchall()
+    for r in rows:
+        rid, uid, lid, num = r["id"], r["user_id"], r["level_id"], r["lesson_number"]
+        exists = conn.execute(
+            "SELECT id FROM lookback_responses WHERE user_id = ? AND level_id = ?"
+            " AND lesson_number = ?", (uid, lid, num)).fetchone()
+        if exists:
+            lb_id = exists["id"]
+        else:
+            answer = (r["pos"] or "").strip()
+            if (r["imp"] or "").strip():
+                answer = (answer + "\n\n" + r["imp"].strip()).strip()
+            ts = r["created_at"] or now_iso()
+            conn.execute(
+                "INSERT INTO lookback_responses (user_id, level_id, lesson_number,"
+                " did_homework, answer_text, created_at, updated_at)"
+                " VALUES (?,?,?,?,?,?,?)",
+                (uid, lid, num, r["did_homework"], answer, ts, ts))
+            lb_id = conn.execute(
+                "SELECT id FROM lookback_responses WHERE user_id = ? AND level_id = ?"
+                " AND lesson_number = ?", (uid, lid, num)).fetchone()["id"]
+        # Re-link entries auto-logged from the old reflection to the lookback.
+        conn.execute("UPDATE entries SET lookback_id = ? WHERE reflection_id = ?",
+                     (lb_id, rid))
 
 
 def _ensure_entry_tracking_columns(conn):
@@ -160,6 +220,10 @@ def _ensure_entry_tracking_columns(conn):
         conn.execute("ALTER TABLE entries ADD COLUMN source TEXT DEFAULT 'manual'")
     if "reflection_id" not in cols:
         conn.execute("ALTER TABLE entries ADD COLUMN reflection_id INTEGER")
+    if "lookback_id" not in cols:
+        conn.execute("ALTER TABLE entries ADD COLUMN lookback_id INTEGER")
+    if "subj_question_id" not in cols:
+        conn.execute("ALTER TABLE entries ADD COLUMN subj_question_id TEXT")
 
 
 def now_iso():

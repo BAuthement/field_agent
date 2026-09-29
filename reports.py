@@ -31,9 +31,12 @@ TYPE_LABELS = {
 }
 
 
-def generate_report(entries, user, start, end, lang="en", reflections=None):
-    """entries: list of dicts within [start, end]. reflections: list of dicts with
-    lesson_title, positive_experience, improve. Returns PDF bytes."""
+def generate_report(entries, user, start, end, lang="en", reflections=None, strategy=None,
+                    first_names_only=None):
+    """entries: list of dicts within [start, end].
+    reflections: Look Back reflections — dicts with lesson_title, answer_text.
+    strategy: subjective answers — dicts with section_en/es, label_en/es,
+      answer_text, names_first_only. Returns PDF bytes."""
     labels = TYPE_LABELS[lang]
     buf = io.BytesIO()
     doc = SimpleDocTemplate(buf, pagesize=LETTER, topMargin=0.7 * inch, bottomMargin=0.7 * inch)
@@ -109,16 +112,28 @@ def generate_report(entries, user, start, end, lang="en", reflections=None):
         story.append(Paragraph("Ministry experiences" if lang == "en" else "Experiencias ministeriales", h2))
         for r in reflections:
             title = (r.get("lesson_title") or "").strip()
-            pos = (r.get("positive_experience") or "").strip().replace("\n", " ")
-            imp = (r.get("improve") or "").strip().replace("\n", " ")
+            ans = (r.get("answer_text") or "").strip().replace("\n", " ")
             if title:
                 story.append(Paragraph(f"<b>{title}</b>", body))
-            if pos:
-                story.append(Paragraph(pos, body))
-            if imp:
-                lbl = "What I could do better:" if lang == "en" else "Lo que podr\u00eda mejorar:"
-                story.append(Paragraph(f"<i>{lbl}</i> {imp}", small))
+            if ans:
+                story.append(Paragraph(ans, body))
             story.append(Spacer(1, 6))
+
+    if strategy:
+        story.append(Paragraph("Ministry strategy responses" if lang == "en" else "Respuestas de estrategia ministerial", h2))
+        cur_section = None
+        for s in strategy:
+            section = s["section_es"] if lang == "es" else s["section_en"]
+            if section != cur_section:
+                cur_section = section
+                story.append(Paragraph(f"<b>{section}</b>", body))
+                story.append(Spacer(1, 2))
+            label = s["label_es"] if lang == "es" else s["label_en"]
+            ans = (s.get("answer_text") or "").strip().replace("\n", " ")
+            if s.get("names_first_only") and first_names_only:
+                ans = first_names_only(ans)
+            story.append(Paragraph(f"<i>{label}:</i> {ans}", body))
+            story.append(Spacer(1, 4))
 
     story.append(Paragraph("Timeline" if lang == "en" else "Cronolog\u00eda", h2))
     trows = [[Paragraph(f"<b>{'Date' if lang == 'en' else 'Fecha'}</b>", small),

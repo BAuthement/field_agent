@@ -1,14 +1,19 @@
 """Loads the parsed NPL Academy curriculum."""
 import json
 import os
+import re
 
 _BASE = os.path.dirname(os.path.abspath(__file__))
 _PATH = os.path.join(_BASE, "curriculum", "curriculum.json")
 _QUIZ_PATH = os.path.join(_BASE, "curriculum", "quizzes.json")
 _GATE_PATH = os.path.join(_BASE, "curriculum", "gates.json")
+_SUBJ_PATH = os.path.join(_BASE, "curriculum", "subjective_questions.json")
+_INTROIMG_PATH = os.path.join(_BASE, "curriculum", "intro_images.json")
 _curriculum = None
 _quizzes = None
 _gates = None
+_subjective = None
+_intro_images = None
 
 
 def get_curriculum():
@@ -247,29 +252,46 @@ def get_step_placements(level_id, number):
     return placements
 
 
-def get_lesson_body_html(level_id, number, caption):
+def get_lesson_body_html(level_id, number, caption, extra_inserts=None):
     """Lesson body with workbook step images interleaved at their mapped
-    positions. Returns HTML (text escaped, figures raw)."""
+    positions. Returns HTML (text escaped, figures raw).
+
+    extra_inserts: optional list of (offset, html) tuples — e.g. subjective
+    response boxes — merged with the image placements in offset order.
+    """
     import html as _html
     les = get_lesson(level_id, number)
     if not les:
         return ""
     body = les["body"]
     placements = get_step_placements(level_id, number)
+    inserts = [("img", p["offset"],
+                '<figure class="step-fig">'
+                f'<img src="/static/img/{_html.escape(p["image"])}" '
+                f'alt="{_html.escape(caption)}" loading="lazy">'
+                f'<figcaption>{_html.escape(caption)}</figcaption>'
+                "</figure>")
+               for p in placements]
+    for img, anchor, alt, cap in get_intro_image_placements(level_id, number):
+        off = anchor_start(body, anchor)
+        if off == -1:
+            continue
+        inserts.append(("img", off,
+                        '<figure class="step-fig">'
+                        f'<img src="/static/img/{_html.escape(img)}" '
+                        f'alt="{_html.escape(alt or caption)}" loading="lazy">'
+                        + (f'<figcaption>{_html.escape(cap)}</figcaption>' if cap else "")
+                        + "</figure>"))
+    for off, html in (extra_inserts or []):
+        inserts.append(("box", max(0, min(off, len(body))), html))
+    inserts.sort(key=lambda x: (x[1], 0 if x[0] == "img" else 1))
     parts = []
     last = 0
-    for i, p in enumerate(placements):
-        off = max(0, min(p["offset"], len(body)))
+    for _, off, html in inserts:
         if off < last:
             off = last
         parts.append(_html.escape(body[last:off]))
-        parts.append(
-            '<figure class="step-fig">'
-            f'<img src="/static/img/{_html.escape(p["image"])}" '
-            f'alt="{_html.escape(caption)}" loading="lazy">'
-            f'<figcaption>{_html.escape(caption)}</figcaption>'
-            "</figure>"
-        )
+        parts.append(html)
         last = off
     parts.append(_html.escape(body[last:]))
     return "".join(parts)
@@ -320,3 +342,67 @@ def prev_lesson_key(level_id, number):
                 return pl["id"], pl["lessons"][-1]["number"]
         return None
     return None
+
+
+def split_lookback(level_id, number):
+    """Split a lesson body into (lookback_text, rest). lookback_text is None
+    when the lesson has no Look Back section (e.g. Introduction pages)."""
+    les = get_lesson(level_id, number)
+    if not les:
+        return None, ""
+    body = les["body"]
+    idx = body.find("\nLook Up:")
+    if body.lstrip().startswith("Look Back:") and idx != -1:
+        return body[:idx], body[idx + 1:]
+    return None, body
+
+
+def anchor_start(body, anchor):
+    """Start offset of anchor within body, tolerating whitespace differences.
+    Returns -1 when not found."""
+    words = anchor.split()
+    if not words:
+        return -1
+    pat = r"\s+".join(re.escape(w) for w in words)
+    m = re.search(pat, body)
+    return m.start() if m else -1
+
+
+def anchor_end(body, anchor):
+    """End offset of anchor within body, tolerating whitespace differences.
+    Returns -1 when not found."""
+    words = anchor.split()
+    if not words:
+        return -1
+    pat = r"\s+".join(re.escape(w) for w in words)
+    m = re.search(pat, body)
+    return m.end() if m else -1
+
+
+def get_subjective_questions():
+    """All subjective response questions, keyed 'level_id:number'."""
+    global _subjective
+    if _subjective is None:
+        try:
+            with open(_SUBJ_PATH, encoding="utf-8") as f:
+                _subjective = json.load(f)
+        except FileNotFoundError:
+            _subjective = {}
+    return _subjective
+
+
+def get_subjective_for(level_id, number):
+    return get_subjective_questions().get(f"{level_id}:{number}", [])
+
+
+def get_intro_image_placements(level_id, number):
+    """[(image_filename, anchor_text), ...] for Introduction pages."""
+    global _intro_images
+    if _intro_images is None:
+        try:
+            with open(_INTROIMG_PATH, encoding="utf-8") as f:
+                _intro_images = json.load(f)
+        except FileNotFoundError:
+            _intro_images = {}
+    return [(p["image"], p["anchor"], p.get("alt", ""), p.get("caption", ""))
+            for p in _intro_images.get(f"{level_id}:{number}", [])]

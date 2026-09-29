@@ -13,9 +13,10 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import db
 from assistant import answer as assistant_answer
 from curriculum import (get_curriculum, get_lesson, get_lesson_illustrations,
-                        get_lesson_body_html,
+                        get_lesson_body_html, anchor_end, split_lookback,
+                        get_subjective_for,
                         get_level, get_quiz,
-                        get_gates, gate_key_for, prev_lesson_key, prev_level_with_lessons)
+                        get_gates, gate_key_for, prev_level_with_lessons)
 from experience import (SHARE_LABELS, detect_ministry_action,
                         extract_people_count)
 from i18n import STRINGS, QUIZ_RIGHT, QUIZ_WRONG, get_lang, t
@@ -100,31 +101,100 @@ def gate_redirect(level_id):
     return None
 
 
-def get_reflection(user_id, level_id, number):
-    conn = db.get_db()
-    row = conn.execute(
-        "SELECT * FROM homework_reflections WHERE user_id = ? AND level_id = ? AND lesson_number = ?",
-        (user_id, level_id, number)).fetchone()
-    conn.close()
-    return dict(row) if row else None
-
-
-def user_reflections(user_id):
-    """Reflections with did_homework=1, enriched with the title of the lesson
-    whose homework was reflected on (the lesson before the one being entered)."""
+def user_lookbacks(user_id):
+    """Look Back reflections (did_homework=1, or lesson-1 text answers),
+    enriched with the lesson title, for donor reports."""
     conn = db.get_db()
     rows = conn.execute(
-        "SELECT * FROM homework_reflections WHERE user_id = ? AND did_homework = 1 ORDER BY created_at",
-        (user_id,)).fetchall()
+        "SELECT * FROM lookback_responses WHERE user_id = ? AND"
+        " ((lesson_number >= 2 AND did_homework = 1) OR (lesson_number = 1 AND TRIM(answer_text) != ''))"
+        " ORDER BY created_at", (user_id,)).fetchall()
     conn.close()
     out = []
     for r in rows:
         d = dict(r)
-        prev = prev_lesson_key(d["level_id"], d["lesson_number"])
-        les = get_lesson(prev[0], prev[1]) if prev else get_lesson(d["level_id"], d["lesson_number"])
-        d["lesson_title"] = les["title"] if les else ""
+        les = get_lesson(d["level_id"], d["lesson_number"])
+        lvl = get_level(d["level_id"])
+        d["lesson_title"] = (f"{lvl['number']}: {lvl['name']} — {les['title']}"
+                             if lvl and les else "")
         out.append(d)
     return out
+
+
+def user_all_responses(user_id):
+    """Every subjective text-box answer with its question metadata, grouped
+    by section for the dashboard. Full text (privacy trimming applies only
+    to the donor report)."""
+    from curriculum import get_subjective_questions
+    meta = {}
+    for items in get_subjective_questions().values():
+        for q in items:
+            meta[q["id"]] = q
+    conn = db.get_db()
+    rows = conn.execute(
+        "SELECT level_id, lesson_number, question_id, answer_text, updated_at"
+        " FROM subjective_responses WHERE user_id = ? AND TRIM(answer_text) != ''"
+        " ORDER BY updated_at", (user_id,)).fetchall()
+    conn.close()
+    out = []
+    for r in rows:
+        q = meta.get(r["question_id"])
+        if not q:
+            continue
+        lvl = get_level(r["level_id"])
+        les = get_lesson(r["level_id"], r["lesson_number"])
+        out.append({
+            "qid": r["question_id"], "level_id": r["level_id"],
+            "lesson_number": r["lesson_number"],
+            "section_en": q["section_en"], "section_es": q["section_es"],
+            "label_en": q["label_en"], "label_es": q["label_es"],
+            "answer_text": r["answer_text"] or "",
+            "lesson_title": (f"{lvl['number']}: {lvl['name']} — {les['title']}"
+                             if lvl and les else ""),
+        })
+    return out
+
+
+def user_strategy_responses(user_id):
+    """Subjective text-box answers flagged for the donor report, joined with
+    their question metadata."""
+    from curriculum import get_subjective_questions
+    meta = {}
+    for _key, items in get_subjective_questions().items():
+        for q in items:
+            if q.get("donor_report"):
+                meta[q["id"]] = q
+    conn = db.get_db()
+    rows = conn.execute(
+        "SELECT level_id, lesson_number, question_id, answer_text, updated_at"
+        " FROM subjective_responses WHERE user_id = ? AND TRIM(answer_text) != ''"
+        " ORDER BY updated_at", (user_id,)).fetchall()
+    conn.close()
+    out = []
+    for r in rows:
+        q = meta.get(r["question_id"])
+        if not q:
+            continue
+        les = get_lesson(r["level_id"], r["lesson_number"])
+        out.append({
+            "section_en": q["section_en"], "section_es": q["section_es"],
+            "label_en": q["label_en"], "label_es": q["label_es"],
+            "answer_text": r["answer_text"] or "",
+            "names_first_only": bool(q.get("names_first_only")),
+            "lesson_title": les["title"] if les else "",
+        })
+    return out
+
+
+def first_names_only(text):
+    """Privacy: reduce a name list to first names only."""
+    parts = [p.strip() for p in text.replace("\n", ",").split(",")]
+    firsts = []
+    for p in parts:
+        toks = p.split()
+        if toks:
+            firsts.append(toks[0])
+    return ", ".join(firsts)
 
 
 def feedback_msg(pool, lang, key):
@@ -211,10 +281,12 @@ def dashboard():
         "people": sum(e["people_count"] or 0 for e in entries),
         "baptisms": sum(1 for e in entries if e["type"] == "baptism"),
         "churches": sum(1 for e in entries if e["type"] == "church_plant"),
-        "lessons": len(progress),
+        "lessons": sum(1 for (_lid, n) in progress if n >= 1),
         "followups": sum(1 for e in entries if e["follow_up"]),
     }
-    return render_template("dashboard.html", user=user, stats=stats, recent=entries[:8])
+    return render_template("dashboard.html", user=user, stats=stats, recent=entries[:8],
+                           responses=user_all_responses(user["id"]),
+                           lookbacks=user_lookbacks(user["id"]))
 
 
 @app.route("/log", methods=["GET", "POST"])
@@ -261,7 +333,8 @@ def training():
     progress = user_progress(session["user_id"])
     levels = []
     for lvl in get_curriculum()["levels"]:
-        done = sum(1 for les in lvl["lessons"] if (lvl["id"], les["number"]) in progress)
+        done = sum(1 for les in lvl["lessons"]
+                   if les["number"] >= 1 and (lvl["id"], les["number"]) in progress)
         levels.append({"level": lvl, "done": done})
     return render_template("training.html", levels=levels)
 
@@ -323,6 +396,116 @@ def level_gate(level_id):
                            error=None, **ctx)
 
 
+def get_subj_responses(uid, level_id, number):
+    conn = db.get_db()
+    rows = conn.execute(
+        "SELECT question_id, answer_text FROM subjective_responses"
+        " WHERE user_id = ? AND level_id = ? AND lesson_number = ?",
+        (uid, level_id, number)).fetchall()
+    conn.close()
+    return {r["question_id"]: (r["answer_text"] or "") for r in rows}
+
+
+def get_lookback(uid, level_id, number):
+    conn = db.get_db()
+    row = conn.execute(
+        "SELECT * FROM lookback_responses WHERE user_id = ? AND level_id = ? AND lesson_number = ?",
+        (uid, level_id, number)).fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+
+def lookback_satisfied(resp, number):
+    """Has the student completed this lesson's Look Back reflection?"""
+    if not resp:
+        return False
+    answered = bool((resp["answer_text"] or "").strip())
+    if number == 1:
+        return answered  # the Introduction has no GOAL; reflection is text-only
+    return resp["did_homework"] == 1 and answered
+
+
+def _auto_log_experience(uid, user, text, lookback_id=None, subj_qid=None):
+    """Auto-log a ministry activity when the text describes sharing the gospel.
+
+    Returns (ask_count_entry_id or None, share_label). Dedupes on the link so
+    resubmissions update instead of duplicating.
+    """
+    action = detect_ministry_action(text)
+    if not action:
+        return None, None
+    atype, share_label = action
+    count = extract_people_count(text)
+    conn = db.get_db()
+    if lookback_id is not None:
+        row = conn.execute(
+            "SELECT id, people_count FROM entries WHERE user_id = ? AND lookback_id = ?",
+            (uid, lookback_id)).fetchone()
+        link_col, link_val = "lookback_id", lookback_id
+    else:
+        row = conn.execute(
+            "SELECT id, people_count FROM entries WHERE user_id = ? AND subj_question_id = ?",
+            (uid, subj_qid)).fetchone()
+        link_col, link_val = "subj_question_id", subj_qid
+    notes = text[:200]
+    loc = (user["field_location"] or "").strip()
+    if row:
+        conn.execute("UPDATE entries SET type = ?, notes = ? WHERE id = ?",
+                     (atype, notes, row["id"]))
+        entry_id = row["id"]
+        if not row["people_count"] and count:
+            conn.execute("UPDATE entries SET people_count = ? WHERE id = ?",
+                         (count, entry_id))
+    else:
+        conn.execute(
+            "INSERT INTO entries (user_id, type, date, location, people_count, notes,"
+            " follow_up, created_at, source, reflection_id, lookback_id, subj_question_id)"
+            " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+            (uid, atype, date.today().isoformat(), loc, count or 0, notes,
+             0, db.now_iso(), "reflection", None, lookback_id, subj_qid))
+        entry_id = conn.execute(
+            f"SELECT id FROM entries WHERE user_id = ? AND {link_col} = ?"
+            " ORDER BY id DESC LIMIT 1", (uid, link_val)).fetchone()["id"]
+    conn.commit()
+    conn.close()
+    already_counted = (row and row["people_count"]) or count
+    return (None if already_counted else entry_id), share_label
+
+
+def _valid_ask_count(uid, entry_id):
+    if not entry_id:
+        return None
+    conn = db.get_db()
+    row = conn.execute(
+        "SELECT id FROM entries WHERE id = ? AND user_id = ? AND source = 'reflection'",
+        (entry_id, uid)).fetchone()
+    conn.close()
+    return row["id"] if row else None
+
+
+def _textbox_html(level_id, number, q, saved, lang, answered_qid=None,
+                  err_qid=None, next_dest=None):
+    import html as _html
+    qid = q["id"]
+    label = q["label_es"] if lang == "es" else q["label_en"]
+    thanks = (f'<div class="alert">&#x2713; {_html.escape(t("answer_thanks", lang))}</div>'
+              if answered_qid == qid else "")
+    err = (f'<div class="alert warn">{_html.escape(t("answer_required", lang))}</div>'
+           if err_qid == qid else "")
+    nxt = (f'<input type="hidden" name="next" value="{_html.escape(next_dest)}">'
+           if next_dest else "")
+    return (
+        f'<div class="textbox" id="tb-{_html.escape(qid)}">'
+        f'<form method="post" action="{url_for("save_response", level_id=level_id, number=number)}">'
+        f'<input type="hidden" name="question_id" value="{_html.escape(qid)}">{nxt}'
+        f'<label for="ta-{_html.escape(qid)}"><strong>{_html.escape(label)}</strong></label>'
+        f'<textarea id="ta-{_html.escape(qid)}" name="answer" rows="3" '
+        f'placeholder="{_html.escape(t("answer_ph", lang))}">{_html.escape(saved or "")}</textarea>'
+        f'<button class="btn small gold" type="submit">{t("answer_submit", lang)}</button>'
+        f'</form>{thanks}{err}</div>'
+    )
+
+
 @app.route("/training/<level_id>/<int:number>")
 @login_required
 def training_lesson(level_id, number):
@@ -334,130 +517,165 @@ def training_lesson(level_id, number):
     if blocked:
         return blocked
     uid = session["user_id"]
+    # The Introduction (with its quiz, if any) must be finished before any
+    # numbered lesson can be opened.
+    if number >= 1 and (level_id, 0) not in user_progress(uid):
+        return redirect(url_for("training_lesson", level_id=level_id, number=0))
+    lang = get_lang(session)
+    fb = session.pop("quiz_feedback", None)
+    is_intro = (number == 0)
+    lbl = request.args.get("share_label")
+    share_label = lbl if lbl in SHARE_LABELS else None
+    ask_count = _valid_ask_count(uid, request.args.get("ask_count", type=int))
+
+    # Look Back gate (inline): lessons 1+ show only their Look Back section
+    # until the reflection is answered. Introduction pages have no Look Back.
+    lb_text, _lb_rest = split_lookback(level_id, number)
+    lb_resp = get_lookback(uid, level_id, number) if lb_text else None
+    if lb_text and not lookback_satisfied(lb_resp, number):
+        import html as _html
+        return render_template(
+            "training_lesson.html", level=lvl, lesson=les, done=False,
+            total=len(lvl["lessons"]), prev_n=None, next_n=None,
+            questions=None, quiz_done=False, quiz_just_done=None,
+            feedback=fb, body_html=_html.escape(lb_text),
+            illustrations=[], lookback_gate=True, lb_resp=lb_resp,
+            lb_error=request.args.get("lb_err"),
+            lb_blocked=request.args.get("lb_blocked"), unanswered=[],
+            ask_count=ask_count, share_label=share_label,
+            is_intro=is_intro)
+
+    # Full lesson view.
     progress = user_progress(uid)
-    # Homework reflection gate: entering a lesson whose previous lesson is
-    # completed requires reflecting on the previous lesson's homework first.
-    prev = prev_lesson_key(level_id, number)
-    if prev and prev in progress:
-        refl = get_reflection(uid, level_id, number)
-        mode = request.args.get("mode", "form")
-        prev_les = get_lesson(prev[0], prev[1])
-        gate_ctx = dict(level=lvl, lesson=les, prev_lesson=prev_les,
-                        prev_level_id=prev[0], error=None)
-        if mode == "affirmed" and refl and refl["did_homework"]:
-            ask_count = request.args.get("ask_count", type=int)
-            share_entry = share_label = None
-            if ask_count:
-                conn = db.get_db()
-                share_entry = conn.execute(
-                    "SELECT id FROM entries WHERE id = ? AND user_id = ? AND source = 'reflection'",
-                    (ask_count, uid)).fetchone()
-                conn.close()
-                if share_entry:
-                    lbl = request.args.get("share_label")
-                    share_label = lbl if lbl in SHARE_LABELS else "share_gospel"
-            return render_template("homework_gate.html", mode="affirmed",
-                                   ask_count=share_entry["id"] if share_entry else None,
-                                   share_label=share_label, **gate_ctx)
-        if not refl or not refl["did_homework"]:
-            show = "blocked" if mode == "blocked" else "form"
-            return render_template("homework_gate.html", mode=show, **gate_ctx)
     done = (level_id, number) in progress
     questions = get_quiz(level_id, number)
     qdone = (level_id, number) in quiz_done_for(uid)
     total = len(lvl["lessons"])
-    prev_n = number - 1 if number > 1 else None
+    prev_n = number - 1 if number >= 1 else None
     next_n = number + 1 if number < total else None
-    fb = session.pop("quiz_feedback", None)
-    lang = get_lang(session)
-    body_html = get_lesson_body_html(level_id, number, t("step_caption", lang))
+
+    subj = get_subjective_for(level_id, number)
+    saved = get_subj_responses(uid, level_id, number) if subj else {}
+    unanswered = [q for q in subj if not (saved.get(q["id"]) or "").strip()]
+    inserts = []
+    for q in subj:
+        off = anchor_end(les["body"], q["anchor"])
+        if off != -1:
+            inserts.append((off, _textbox_html(
+                level_id, number, q, saved.get(q["id"], ""), lang,
+                answered_qid=request.args.get("answered"),
+                err_qid=request.args.get("err"))))
+    body_html = get_lesson_body_html(level_id, number, t("step_caption", lang),
+                                     extra_inserts=inserts)
     return render_template("training_lesson.html", level=lvl, lesson=les, done=done,
                            total=total, prev_n=prev_n, next_n=next_n,
                            questions=questions, quiz_done=qdone,
                            quiz_just_done=request.args.get("quiz_done"),
                            feedback=fb, body_html=body_html,
-                           illustrations=get_lesson_illustrations(level_id, number))
+                           illustrations=get_lesson_illustrations(level_id, number),
+                           lookback_gate=False, unanswered=unanswered,
+                           ask_count=ask_count, share_label=share_label,
+                           is_intro=is_intro)
 
 
-@app.route("/training/<level_id>/<int:number>/reflect", methods=["POST"])
+@app.route("/training/<level_id>/<int:number>/respond", methods=["POST"])
 @login_required
-def reflect_homework(level_id, number):
+def save_response(level_id, number):
+    """Save one subjective text-box answer (upsert)."""
     uid = session["user_id"]
-    user = current_user()
-    lang = get_lang(session)
     lvl = get_level(level_id)
     les = get_lesson(level_id, number)
     if not lvl or not les:
         return redirect(url_for("training"))
-    did = request.form.get("did_homework") == "yes"
-    positive = request.form.get("positive_experience", "").strip()
-    improve = request.form.get("improve", "").strip()
-    if did and (not positive or not improve):
-        prev = prev_lesson_key(level_id, number)
-        prev_les = get_lesson(prev[0], prev[1]) if prev else None
-        return render_template("homework_gate.html", level=lvl, lesson=les,
-                               prev_lesson=prev_les, prev_level_id=prev[0] if prev else level_id,
-                               mode="form", error=t("gate_required", lang))
-    existing = get_reflection(uid, level_id, number)
+    qid = request.form.get("question_id", "")
+    if not any(q["id"] == qid for q in get_subjective_for(level_id, number)):
+        return redirect(url_for("training_lesson", level_id=level_id, number=number))
+    answer = request.form.get("answer", "").strip()
+    if not answer:
+        return redirect(url_for("training_lesson", level_id=level_id, number=number,
+                                err=qid) + f"#tb-{qid}")
+    now = db.now_iso()
     conn = db.get_db()
-    if existing:
-        conn.execute("UPDATE homework_reflections SET did_homework = ?, positive_experience = ?,"
-                     " improve = ?, created_at = ? WHERE id = ?",
-                     (1 if did else 0, positive, improve, db.now_iso(), existing["id"]))
-        refl_id = existing["id"]
-    else:
-        conn.execute("INSERT INTO homework_reflections (user_id, level_id, lesson_number, did_homework,"
-                     " positive_experience, improve, created_at) VALUES (?,?,?,?,?,?,?)",
-                     (uid, level_id, number, 1 if did else 0, positive, improve, db.now_iso()))
-        refl_id = conn.execute(
-            "SELECT id FROM homework_reflections WHERE user_id = ? AND level_id = ? AND lesson_number = ?",
-            (uid, level_id, number)).fetchone()["id"]
-
-    # Experience tracking: when the described experience mentions sharing the
-    # gospel (testimony, 3-Circles, ...), log it as an activity automatically
-    # so dashboard stats and donor reports pick it up without re-entry.
-    ask_count_entry = None
-    share_label = None
-    if did:
-        action = detect_ministry_action(positive + "\n" + improve)
-        if action:
-            atype, share_label = action
-            count = extract_people_count(positive + "\n" + improve)
-            notes = positive[:200]
-            loc = (user["field_location"] or "").strip()
-            linked = conn.execute(
-                "SELECT id, people_count FROM entries WHERE user_id = ? AND reflection_id = ?",
-                (uid, refl_id)).fetchone()
-            if linked:
-                conn.execute("UPDATE entries SET type = ?, notes = ? WHERE id = ?",
-                             (atype, notes, linked["id"]))
-                entry_id = linked["id"]
-                if not linked["people_count"] and count:
-                    conn.execute("UPDATE entries SET people_count = ? WHERE id = ?",
-                                 (count, entry_id))
-                elif not linked["people_count"]:
-                    ask_count_entry = entry_id
-            else:
-                conn.execute(
-                    "INSERT INTO entries (user_id, type, date, location, people_count, notes,"
-                    " follow_up, created_at, source, reflection_id)"
-                    " VALUES (?,?,?,?,?,?,?,?,?,?)",
-                    (uid, atype, date.today().isoformat(), loc, count or 0, notes,
-                     0, db.now_iso(), "reflection", refl_id))
-                entry_id = conn.execute(
-                    "SELECT id FROM entries WHERE user_id = ? AND reflection_id = ?"
-                    " ORDER BY id DESC LIMIT 1", (uid, refl_id)).fetchone()["id"]
-                if not count:
-                    ask_count_entry = entry_id
+    cur = conn.execute(
+        "UPDATE subjective_responses SET answer_text = ?, updated_at = ?"
+        " WHERE user_id = ? AND level_id = ? AND lesson_number = ? AND question_id = ?",
+        (answer, now, uid, level_id, number, qid))
+    if cur.rowcount == 0:
+        conn.execute(
+            "INSERT INTO subjective_responses (user_id, level_id, lesson_number,"
+            " question_id, answer_text, created_at, updated_at)"
+            " VALUES (?,?,?,?,?,?,?)",
+            (uid, level_id, number, qid, answer, now, now))
     conn.commit()
     conn.close()
-    if did:
-        if ask_count_entry:
+    ask_count, share_label = _auto_log_experience(uid, current_user(), answer, subj_qid=qid)
+    if request.form.get("next") == "dashboard":
+        return redirect(url_for("dashboard") + f"#resp-{qid}")
+    dest = url_for("training_lesson", level_id=level_id, number=number, answered=qid)
+    if ask_count:
+        dest = url_for("training_lesson", level_id=level_id, number=number,
+                       answered=qid, ask_count=ask_count, share_label=share_label)
+    return redirect(dest + f"#tb-{qid}")
+
+
+@app.route("/training/<level_id>/<int:number>/lookback", methods=["POST"])
+@login_required
+def save_lookback(level_id, number):
+    """Save the inline Look Back reflection (upsert)."""
+    uid = session["user_id"]
+    lvl = get_level(level_id)
+    les = get_lesson(level_id, number)
+    if not lvl or not les:
+        return redirect(url_for("training"))
+    lb_text, _ = split_lookback(level_id, number)
+    if not lb_text:
+        return redirect(url_for("training_lesson", level_id=level_id, number=number))
+    answer = request.form.get("answer_text", "").strip()
+    did = None
+    if number >= 2:
+        raw = request.form.get("did_homework")
+        if raw not in ("yes", "no"):
             return redirect(url_for("training_lesson", level_id=level_id, number=number,
-                                    mode="affirmed", ask_count=ask_count_entry,
-                                    share_label=share_label))
-        return redirect(url_for("training_lesson", level_id=level_id, number=number, mode="affirmed"))
-    return redirect(url_for("training_lesson", level_id=level_id, number=number, mode="blocked"))
+                                    lb_err="yn"))
+        did = 1 if raw == "yes" else 0
+        if did and not answer:
+            return redirect(url_for("training_lesson", level_id=level_id, number=number,
+                                    lb_err="text"))
+    elif not answer:
+        return redirect(url_for("training_lesson", level_id=level_id, number=number,
+                                lb_err="text"))
+    now = db.now_iso()
+    conn = db.get_db()
+    cur = conn.execute(
+        "UPDATE lookback_responses SET did_homework = ?, answer_text = ?, updated_at = ?"
+        " WHERE user_id = ? AND level_id = ? AND lesson_number = ?",
+        (did, answer, now, uid, level_id, number))
+    if cur.rowcount == 0:
+        conn.execute(
+            "INSERT INTO lookback_responses (user_id, level_id, lesson_number,"
+            " did_homework, answer_text, created_at, updated_at)"
+            " VALUES (?,?,?,?,?,?,?)",
+            (uid, level_id, number, did, answer, now, now))
+    conn.commit()
+    lb_id = conn.execute(
+        "SELECT id FROM lookback_responses WHERE user_id = ? AND level_id = ? AND lesson_number = ?",
+        (uid, level_id, number)).fetchone()["id"]
+    conn.close()
+    ask_count = share_label = None
+    if lookback_satisfied({"did_homework": did, "answer_text": answer}, number):
+        ask_count, share_label = _auto_log_experience(
+            uid, current_user(), answer, lookback_id=lb_id)
+    if request.form.get("next") == "dashboard":
+        return redirect(url_for("dashboard") + f"#lb-{level_id}-{number}")
+    if did == 0:
+        # Encouragement/blocking path: keep them at the gate with the
+        # "go do the homework" message, previous answers preserved.
+        return redirect(url_for("training_lesson", level_id=level_id, number=number,
+                                lb_blocked=1))
+    if ask_count:
+        return redirect(url_for("training_lesson", level_id=level_id, number=number,
+                                ask_count=ask_count, share_label=share_label))
+    return redirect(url_for("training_lesson", level_id=level_id, number=number))
 
 
 @app.route("/training/<level_id>/<int:number>/count", methods=["POST"])
@@ -478,7 +696,7 @@ def save_shared_count(level_id, number):
             conn.execute("UPDATE entries SET people_count = ? WHERE id = ?", (count, entry_id))
             conn.commit()
         conn.close()
-    return redirect(url_for("training_lesson", level_id=level_id, number=number, mode="affirmed"))
+    return redirect(url_for("training_lesson", level_id=level_id, number=number))
 
 
 @app.route("/training/<level_id>/<int:number>/quiz", methods=["GET", "POST"])
@@ -494,6 +712,10 @@ def lesson_quiz(level_id, number):
     blocked = gate_redirect(level_id)
     if blocked:
         return blocked
+    # The Introduction (with its quiz, if any) must be finished before any
+    # numbered lesson or its quiz can be opened.
+    if number >= 1 and (level_id, 0) not in user_progress(uid):
+        return redirect(url_for("training_lesson", level_id=level_id, number=0))
     if (level_id, number) in quiz_done_for(uid):
         return redirect(url_for("training_lesson", level_id=level_id, number=number))
     total = len(questions)
@@ -576,6 +798,14 @@ def toggle_lesson(level_id, number):
     if get_quiz(level_id, number) and (level_id, number) not in quiz_done_for(uid):
         conn.close()
         return redirect(url_for("lesson_quiz", level_id=level_id, number=number, required=1))
+    # Completing: every subjective text box must be answered first.
+    subj = get_subjective_for(level_id, number)
+    if subj:
+        saved = get_subj_responses(uid, level_id, number)
+        if any(not (saved.get(q["id"]) or "").strip() for q in subj):
+            conn.close()
+            return redirect(url_for("training_lesson", level_id=level_id, number=number)
+                            + "#lesson-complete")
     conn.execute("INSERT INTO progress (user_id, level_id, lesson_number, completed_at) VALUES (?,?,?,?)",
                  (uid, level_id, number, db.now_iso()))
     conn.commit()
@@ -599,10 +829,12 @@ def reports_generate():
     start = request.form.get("start_date") or (date.today() - timedelta(days=30)).isoformat()
     end = request.form.get("end_date") or date.today().isoformat()
     entries = [e for e in user_entries(user["id"]) if start <= e["date"] <= end]
-    reflections = user_reflections(user["id"])
-    if not entries and not reflections:
+    reflections = user_lookbacks(user["id"])
+    strategy = user_strategy_responses(user["id"])
+    if not entries and not reflections and not strategy:
         return render_template("reports.html", start=start, end=end, error=t("report_no_data", lang))
-    pdf = generate_report(entries, user, start, end, lang, reflections)
+    pdf = generate_report(entries, user, start, end, lang, reflections, strategy,
+                          first_names_only=first_names_only)
     fname = f"field-report-{start}-to-{end}.pdf"
     return Response(pdf, mimetype="application/pdf",
                     headers={"Content-Disposition": f'attachment; filename="{fname}"'})
@@ -645,7 +877,7 @@ def profile():
 
 @app.route("/health")
 def health():
-    return jsonify({"ok": True, "version": "2.3"})
+    return jsonify({"ok": True, "version": "2.4"})
 
 
 @app.route("/healthz")
