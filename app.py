@@ -645,7 +645,7 @@ def profile():
 
 @app.route("/health")
 def health():
-    return jsonify({"ok": True, "version": "2.2"})
+    return jsonify({"ok": True, "version": "2.3"})
 
 
 @app.route("/healthz")
