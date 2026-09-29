@@ -1,0 +1,193 @@
+{
+ "level1:1": [
+  {
+   "anchor_text": "Kingdom Come:",
+   "image": "steps/level1-01-step02.png",
+   "placement": "after"
+  },
+  {
+   "anchor_text": "[Add circles",
+   "image": "steps/level1-01-step03.png",
+   "placement": "after"
+  },
+  {
+   "anchor_text": "4G+ Streams:",
+   "image": "steps/level1-01-step04.png",
+   "placement": "after"
+  },
+  {
+   "anchor_text": "Abide:",
+   "image": "steps/level1-01-step05.png",
+   "placement": "after"
+  },
+  {
+   "anchor_text": "Pray:",
+   "image": "steps/level1-01-step06.png",
+   "placement": "after"
+  }
+ ],
+ "level1:3": [
+  {
+   "image": "steps/level1-03-step01.png",
+   "anchor_text": "1. Next, in the heading you should write Entry Strategy",
+   "placement": "before"
+  },
+  {
+   "anchor_text": "1. Next, in the heading you should write Entry Strategy",
+   "image": "steps/level1-03-step02.png",
+   "placement": "before"
+  },
+  {
+   "anchor_text": "1. Next, in the heading you should write Entry Strategy",
+   "image": "steps/level1-03-step03.png",
+   "placement": "after"
+  },
+  {
+   "anchor_text": "2. Next, in the heading you should write Gospel",
+   "image": "steps/level1-03-step04.png",
+   "placement": "after"
+  },
+  {
+   "anchor_text": "3. Next, in the heading",
+   "image": "steps/level1-03-step05.png",
+   "placement": "after"
+  },
+  {
+   "anchor_text": "4. Next, in the heading you should write Church Strategy",
+   "image": "steps/level1-03-step06.png",
+   "placement": "after"
+  },
+  {
+   "anchor_text": "5. Next, in the heading you should write Leadership",
+   "image": "steps/level1-03-step07.png",
+   "placement": "after"
+  },
+  {
+   "anchor_text": "over the entire diagram and declare:",
+   "image": "steps/level1-03-step08.png",
+   "placement": "after"
+  }
+ ],
+ "level1:4": [
+  {
+   "image": "steps/level1-04-step02.png",
+   "anchor_text": "1. In Luke 10:1-2, Jesus commands us to Pray.",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level1-04-step03.png",
+   "anchor_text": "2. In Luke 10:3-4, Jesus commands you to Go",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level1-04-step04.png",
+   "anchor_text": "3. In Luke 10:5-8, Jesus commands you to search for a Person of Peace",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level1-04-step11.png",
+   "anchor_text": "3. POP:",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level1-04-step10.png",
+   "anchor_text": "Generations:",
+   "placement": "after"
+  }
+ ],
+ "level3:4": [
+  {
+   "image": "steps/level3-04-step02.png",
+   "anchor_text": "Timing:",
+   "placement": "before"
+  },
+  {
+   "image": "steps/level3-04-step03.png",
+   "anchor_text": "Timing:",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level3-04-step04.png",
+   "anchor_text": "Targets:",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level3-04-step05.png",
+   "anchor_text": "Tools:",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level3-04-step06.png",
+   "anchor_text": "Team:",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level3-04-step07.png",
+   "anchor_text": "Training:",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level3-04-step08.png",
+   "anchor_text": "Tracking:",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level3-04-step09.png",
+   "anchor_text": "Troubleshoot:",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level3-04-step10.png",
+   "anchor_text": "Treasure:",
+   "placement": "after"
+  }
+ ],
+ "level3:9": [
+  {
+   "image": "steps/level3-09-step02.png",
+   "placement": "end"
+  }
+ ],
+ "level3:10": [
+  {
+   "image": "steps/level3-10-step03.png",
+   "anchor_text": "BRUTAL IMPACT:",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level3-10-step04.png",
+   "anchor_text": "CHURCH MAPPING:",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level3-10-step05.png",
+   "placement": "end"
+  }
+ ],
+ "level3:12": [
+  {
+   "image": "steps/level3-12-step01.png",
+   "anchor_text": "YOUR NETWORK OF CHURCHES:",
+   "placement": "before"
+  },
+  {
+   "image": "steps/level3-12-step02.png",
+   "anchor_text": "YOUR NETWORK OF CHURCHES:",
+   "placement": "before"
+  },
+  {
+   "image": "steps/level3-12-step03.png",
+   "placement": "end"
+  },
+  {
+   "image": "steps/level3-12-step04.png",
+   "placement": "end"
+  }
+ ],
+ "level2:10": [
+  {
+   "image": "steps/level2-10-step05.png",
+   "placement": "end"
+  }
+ ]
+}
