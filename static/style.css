@@ -48,6 +48,13 @@ textarea { min-height: 90px; }
 .alert { background: #e9edf5; border: 1px solid var(--navy); border-radius: 8px; padding: 0.7rem; margin-bottom: 1rem; }
 .alert.error { background: #fdecea; border-color: #b3261e; }
 .lesson-body { white-space: pre-wrap; font-size: 0.98rem; }
+.step-fig { margin: 1em auto; text-align: center; background: #fff; border: 1px solid #d8d8d8; border-radius: 8px; padding: 0.6em; max-width: 420px; }
+.step-fig img { max-width: 100%; height: auto; border-radius: 4px; display: block; margin: 0 auto; }
+.step-fig figcaption { font-size: 0.78rem; color: #667; margin-top: 0.45em; }
+@media (min-width: 760px) {
+  .step-fig { float: right; max-width: 40%; margin: 0.2em 0 1em 1.2em; }
+  .lesson-body::after { content: ""; display: table; clear: both; }
+}
 .lookfwd { background: #fff8e1; border-left: 4px solid var(--gold); padding: 0.8rem; border-radius: 0 8px 8px 0; white-space: pre-wrap; margin-top: 1rem; }
 .lesson-link { display: block; padding: 0.7rem; border-bottom: 1px solid #eee; text-decoration: none; color: var(--text); }
 .lesson-link .done { color: var(--teal); font-weight: 700; }
