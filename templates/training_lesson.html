@@ -10,7 +10,7 @@
 <div class="alert{% if not feedback.ok %} warn{% endif %}">{{ feedback.msg }}</div>
 {% endif %}
 <div class="card">
-  <div class="lesson-body">{{ lesson.body }}</div>
+  <div class="lesson-body">{{ body_html|safe }}</div>
   {% if lesson.look_forward %}
   <div class="lookfwd"><strong>{{ t('look_forward') }}</strong>&#10;{{ lesson.look_forward }}</div>
   {% endif %}
