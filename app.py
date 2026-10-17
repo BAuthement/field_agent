@@ -270,6 +270,41 @@ def logout():
     return redirect(url_for("login"))
 
 
+# TEMPORARY — one-time Mark Z. password reset for master-trainer preview.
+# Remove this route after the preview login works. Guarded by RESET_TOKEN
+# env var (set in Render dashboard, never in code). No password is logged.
+@app.route("/reset-markz", methods=["GET", "POST"])
+def reset_markz():
+    expected = os.environ.get("RESET_TOKEN", "")
+    token = request.args.get("token", "") or request.form.get("token", "")
+    if not expected or token != expected:
+        return "Not found", 404
+    if request.method == "POST":
+        pw = request.form.get("password", "")
+        pw2 = request.form.get("password2", "")
+        if not pw or pw != pw2:
+            return "Passwords must match and not be empty. Go back and try again.", 400
+        conn = db.get_db()
+        cur = conn.execute(
+            "UPDATE users SET password_hash=? WHERE email=?",
+            (generate_password_hash(pw), "markz.betatest@example.com"))
+        conn.commit()
+        updated = cur.rowcount
+        conn.close()
+        if updated == 0:
+            return "Mark Z. account not found.", 404
+        return 'Password updated. <a href="/login">Go to login</a> and sign in as Mark Z.'
+    return (
+        "<h2>Reset Mark Z. password (one-time)</h2>"
+        '<form method="post">'
+        f'<input type="hidden" name="token" value="{token}">'
+        'New password: <input type="password" name="password" required><br><br>'
+        'Type it again: <input type="password" name="password2" required><br><br>'
+        '<button type="submit">Update password</button>'
+        "</form>"
+    )
+
+
 @app.route("/dashboard")
 @login_required
 def dashboard():
@@ -306,7 +341,8 @@ def log_work():
         conn.execute(
             "INSERT INTO entries (user_id, type, date, location, people_count, notes, follow_up, created_at)"
             " VALUES (?,?,?,?,?,?,?,?)",
-            (user["id"], etype, edate, request.form.get("location", "").strip(),
+
+  (user["id"], etype, edate, request.form.get("location", "").strip(),
              people, request.form.get("notes", "").strip(),
              1 if request.form.get("follow_up") else 0, db.now_iso()))
         conn.commit()
