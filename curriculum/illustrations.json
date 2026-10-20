@@ -56,11 +56,6 @@
    "file": "illustrations/level2-01-baptize-a.png",
    "caption": "Water / baptism symbol drawn to teach baptism",
    "alt": "Hand-drawn wavy lines representing baptism water"
-  },
-  {
-   "file": "illustrations/level2-01-baptize-b.png",
-   "caption": "Church Planter progression: stages 1, solid dot (2), 3, 4",
-   "alt": "Diagram showing numbered arrows progressing through a solid dot stage"
   }
  ],
  "level2:10": [
@@ -224,5 +219,12 @@
    "alt": "Diagram with a vertical axis labeled PT's (arrow up) and a horizontal axis labeled APE's (arrow forward), with a red diagonal arrow labeled TENSION between them, showing the balance of growing up and going out."
   }
  ],
- "level3:9": []
+ "level3:9": [],
+ "level2:0": [
+  {
+   "file": "illustrations/level2-01-baptize-b.png",
+   "caption": "Church Planter progression: stages 1, solid dot (2), 3, 4",
+   "alt": "Diagram showing numbered arrows progressing through a solid dot stage"
+  }
+ ]
 }

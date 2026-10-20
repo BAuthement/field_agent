@@ -26,6 +26,12 @@
    "placement": "after"
   }
  ],
+ "level1:2": [
+  {
+   "image": "steps/level1-02-step01.png",
+   "placement": "hide"
+  }
+ ],
  "level1:3": [
   {
    "image": "steps/level1-03-step01.png",
@@ -58,14 +64,14 @@
    "placement": "after"
   },
   {
-   "anchor_text": "5. Next, in the heading you should write Leadership",
-   "image": "steps/level1-03-step07.png",
-   "placement": "after"
-  },
-  {
    "anchor_text": "over the entire diagram and declare:",
    "image": "steps/level1-03-step08.png",
    "placement": "after"
+  },
+  {
+   "image": "steps/level1-03-step07.png",
+   "anchor_text": "Conclude the presentation by drawing a big heart",
+   "placement": "before"
   }
  ],
  "level1:4": [
@@ -90,103 +96,404 @@
    "placement": "after"
   },
   {
+   "image": "steps/level1-04-step05.png",
+   "anchor_text": "Write the word Network and draw a lot of circles connecting to the HOP.",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level1-04-step08.png",
+   "anchor_text": "Nations:",
+   "placement": "before"
+  },
+  {
+   "image": "steps/level1-04-step09.png",
+   "anchor_text": "Nations: The dots in your Oikos represent the",
+   "placement": "after"
+  },
+  {
    "image": "steps/level1-04-step10.png",
-   "anchor_text": "Generations:",
+   "anchor_text": "Prayer Strategy:",
+   "placement": "before"
+  }
+ ],
+ "level1:5": [
+  {
+   "image": "steps/level1-05-step02.png",
+   "anchor_text": "Far: Consider two words that describe your life before",
+   "placement": "after"
+  }
+ ],
+ "level1:6": [
+  {
+   "image": "steps/level1-06-step04.png",
+   "anchor_text": "God created us to be in a love relationship with Him.",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level1-06-step05.png",
+   "anchor_text": "That is called sin. And sin always leads to brokenness.",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level1-06-step09.png",
+   "anchor_text": "[8th draw a dotted line arrow from God’s Love to the Broken World.]",
+   "placement": "after"
+  }
+ ],
+ "level1:10": [
+  {
+   "image": "steps/level1-10-step01.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level1-10-step02.png",
+   "placement": "end"
+  }
+ ],
+ "level2:1": [
+  {
+   "image": "steps/level2-01-step01.png",
+   "placement": "hide"
+  }
+ ],
+ "level2:2": [
+  {
+   "image": "steps/level2-02-step01.png",
+   "placement": "hide"
+  }
+ ],
+ "level2:3": [
+  {
+   "image": "steps/level2-03-step01.png",
+   "placement": "hide"
+  }
+ ],
+ "level2:4": [
+  {
+   "image": "steps/level2-04-step01.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level2-04-step02.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level2-04-step03.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level2-04-step04.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level2-04-step05.png",
+   "placement": "hide"
+  }
+ ],
+ "level2:5": [
+  {
+   "image": "steps/level2-05-step01.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level2-05-step02.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level2-05-step03.png",
+   "placement": "hide"
+  }
+ ],
+ "level2:6": [
+  {
+   "image": "steps/level2-06-step01.png",
+   "placement": "hide"
+  }
+ ],
+ "level2:7": [
+  {
+   "image": "steps/level2-07-step02.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level2-07-step03.png",
+   "placement": "hide"
+  }
+ ],
+ "level2:8": [
+  {
+   "image": "steps/level2-08-step01.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level2-08-step02.png",
+   "placement": "hide"
+  }
+ ],
+ "level2:9": [
+  {
+   "image": "steps/level2-09-step01.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level2-09-step02.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level2-09-step03.png",
+   "anchor_text": "explain the dotted line and the ten symbols.",
+   "placement": "after"
+  }
+ ],
+ "level2:10": [
+  {
+   "image": "steps/level2-10-step01.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level2-10-step02.png",
+   "anchor_text": "When a Disciple is not experiencing fruitfulness",
+   "placement": "before"
+  },
+  {
+   "image": "steps/level2-10-step04.png",
+   "anchor_text": "The third major area you should diagnose for stuckages is contextualization.",
+   "placement": "before"
+  },
+  {
+   "image": "steps/level2-10-step05.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level2-10-step06.png",
+   "placement": "end"
+  }
+ ],
+ "level3:1": [
+  {
+   "image": "steps/level3-01-step01.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level3-01-step02.png",
+   "anchor_text": "LEVEL 1: SEED SOWER:",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level3-01-step03.png",
+   "anchor_text": "LEVEL 2: CHURCH PLANTER:",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level3-01-step04.png",
+   "anchor_text": "LEVEL 3: CHURCH MULTIPLIER:",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level3-01-step05.png",
+   "anchor_text": "LEVEL 4: MOVEMENT TRAINER:",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level3-01-step06.png",
+   "anchor_text": "LEVEL 5: STRATEGY COORDINATOR:",
+   "placement": "after"
+  }
+ ],
+ "level3:3": [
+  {
+   "image": "steps/level3-03-step01.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level3-03-step04.png",
+   "anchor_text": "As a result of spreading the gospel, starting house churches",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level3-03-step05.png",
+   "anchor_text": "will reach a phase called Formalization",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level3-03-step06.png",
+   "anchor_text": "leads to the next phase called Institutionalization",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level3-03-step07.png",
+   "anchor_text": "The shaded area that runs along the bottom",
+   "placement": "after"
+  },
+  {
+   "image": "steps/level3-03-step08.png",
+   "anchor_text": "The “sweet spot” is the shaded box",
    "placement": "after"
   }
  ],
  "level3:4": [
   {
+   "image": "steps/level3-04-step01.png",
+   "placement": "hide"
+  },
+  {
    "image": "steps/level3-04-step02.png",
-   "anchor_text": "Timing:",
-   "placement": "before"
+   "placement": "hide"
   },
   {
    "image": "steps/level3-04-step03.png",
-   "anchor_text": "Timing:",
-   "placement": "after"
+   "placement": "hide"
   },
   {
    "image": "steps/level3-04-step04.png",
-   "anchor_text": "Targets:",
-   "placement": "after"
+   "placement": "hide"
   },
   {
    "image": "steps/level3-04-step05.png",
-   "anchor_text": "Tools:",
-   "placement": "after"
+   "placement": "hide"
   },
   {
    "image": "steps/level3-04-step06.png",
-   "anchor_text": "Team:",
-   "placement": "after"
+   "placement": "hide"
   },
   {
    "image": "steps/level3-04-step07.png",
-   "anchor_text": "Training:",
-   "placement": "after"
+   "placement": "hide"
   },
   {
    "image": "steps/level3-04-step08.png",
-   "anchor_text": "Tracking:",
-   "placement": "after"
+   "placement": "hide"
   },
   {
    "image": "steps/level3-04-step09.png",
-   "anchor_text": "Troubleshoot:",
-   "placement": "after"
+   "placement": "hide"
   },
   {
    "image": "steps/level3-04-step10.png",
-   "anchor_text": "Treasure:",
-   "placement": "after"
+   "placement": "hide"
+  }
+ ],
+ "level3:5": [
+  {
+   "image": "steps/level3-05-step01.png",
+   "placement": "end"
+  },
+  {
+   "image": "steps/level3-05-step02.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level3-05-step03.png",
+   "placement": "hide"
+  }
+ ],
+ "level3:6": [
+  {
+   "image": "steps/level3-06-step01.png",
+   "placement": "end"
+  },
+  {
+   "image": "steps/level3-06-step02.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level3-06-step04.png",
+   "placement": "hide"
+  }
+ ],
+ "level3:7": [
+  {
+   "image": "steps/level3-07-step01.png",
+   "placement": "end"
+  },
+  {
+   "image": "steps/level3-07-step02.png",
+   "placement": "hide"
+  }
+ ],
+ "level3:8": [
+  {
+   "image": "steps/level3-08-step01.png",
+   "placement": "end"
+  },
+  {
+   "image": "steps/level3-08-step02.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level3-08-step03.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level3-08-step04.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level3-08-step05.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level3-08-step06.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level3-08-step07.png",
+   "placement": "hide"
   }
  ],
  "level3:9": [
   {
-   "image": "steps/level3-09-step02.png",
+   "image": "steps/level3-09-step01.png",
    "placement": "end"
+  },
+  {
+   "image": "steps/level3-09-step02.png",
+   "placement": "hide"
   }
  ],
  "level3:10": [
   {
+   "image": "steps/level3-10-step01.png",
+   "placement": "hide"
+  },
+  {
+   "image": "steps/level3-10-step02.png",
+   "placement": "hide"
+  },
+  {
    "image": "steps/level3-10-step03.png",
-   "anchor_text": "BRUTAL IMPACT:",
-   "placement": "after"
+   "placement": "end"
   },
   {
    "image": "steps/level3-10-step04.png",
-   "anchor_text": "CHURCH MAPPING:",
-   "placement": "after"
+   "placement": "hide"
   },
   {
    "image": "steps/level3-10-step05.png",
-   "placement": "end"
+   "placement": "hide"
+  }
+ ],
+ "level3:11": [
+  {
+   "image": "steps/level3-11-step02.png",
+   "placement": "hide"
   }
  ],
  "level3:12": [
   {
    "image": "steps/level3-12-step01.png",
-   "anchor_text": "YOUR NETWORK OF CHURCHES:",
-   "placement": "before"
+   "placement": "end"
   },
   {
    "image": "steps/level3-12-step02.png",
-   "anchor_text": "YOUR NETWORK OF CHURCHES:",
-   "placement": "before"
+   "placement": "end"
   },
   {
    "image": "steps/level3-12-step03.png",
-   "placement": "end"
+   "placement": "hide"
   },
   {
    "image": "steps/level3-12-step04.png",
-   "placement": "end"
-  }
- ],
- "level2:10": [
-  {
-   "image": "steps/level2-10-step05.png",
    "placement": "end"
   }
  ]
