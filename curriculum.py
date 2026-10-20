@@ -88,6 +88,11 @@ def get_illustrations():
 
 
 def get_lesson_illustrations(level_id, number):
+    # MISSING (image-audit-level3, L3 Lesson 11): the Troubleshooting symbol
+    # (? + check mark) is named in the master workbook (WB p. 45) but no
+    # standalone image file exists for it in the app. Do NOT fabricate a
+    # diagram: until a real scan is supplied, this slot stays empty. The
+    # symbol appears only miniaturised inside the Lesson 4 Circle key.
     return get_illustrations().get(f"{level_id}:{number}", [])
 
 
@@ -106,7 +111,11 @@ def get_step_overrides():
     anchor_text is a unique substring of the lesson body. placement is
     "after" (default: image goes right after the step containing the
     anchor) or "before" (image goes right before that step starts).
-    Overrides replace the automatic placement for the listed images.
+    placement "end" pins the image to the end of the lesson body.
+    placement "hide" removes the image from the rendered lesson (the file
+    is kept on disk; used for redundant step copies, text screenshots
+    duplicating lesson text, and extraction artifacts). Overrides replace
+    the automatic placement for the listed images.
     """
     global _step_overrides
     if _step_overrides is None:
@@ -121,8 +130,14 @@ def get_step_overrides():
 def _step_end_offset(body, start):
     """Char offset just past the end of the body step containing `start`.
 
-    A step ends at a newline that follows sentence-ending punctuation and
-    is followed by a blank line or a new step/section label.
+    A step ends at the first blank line (a whitespace-only line) after
+    `start` — the end of the paragraph containing the anchor — or, failing
+    that, at a newline that follows sentence-ending punctuation and is
+    followed by a new step/section label. The blank-line rule is what keeps
+    an image beside its own paragraph: the old sentence-boundary-only scan
+    overshot whenever a paragraph's internal newlines did not meet its
+    step-boundary test (e.g. L1 L3 Leadership + conclusion treated as one
+    step, L1 L4 Generations spilling into Prayer Strategy).
     """
     import re
     step_start = re.compile(r"(\d+\.\s+[A-Z]|[A-Za-z0-9][A-Za-z0-9' +\-–—]{0,40}:|\[)")
@@ -132,6 +147,11 @@ def _step_end_offset(body, start):
         nl = body.find("\n", pos)
         if nl == -1:
             return len(body)
+        # End of the paragraph: the next line is blank / whitespace-only.
+        next_nl = body.find("\n", nl + 1)
+        next_line = body[nl + 1:next_nl if next_nl != -1 else len(body)]
+        if next_line.strip() == "":
+            return next_nl + 1 if next_nl != -1 else len(body)
         before = body[max(0, nl - 80):nl].rstrip()
         after = body[nl + 1:nl + 2]
         rest = body[nl + 1:nl + 60]
@@ -149,9 +169,15 @@ def _step_start_offset(body, pos):
 
 def _find_anchor(body, anchor):
     """Find anchor_text in body, ignoring whitespace differences
-    (newlines vs spaces). Returns the original-body offset, or -1."""
+    (newlines vs spaces) and curly-vs-straight quotes/apostrophes.
+    Returns the original-body offset, or -1."""
     import re
-    anchor_norm = re.sub(r"\s+", " ", anchor).strip()
+    _QUOTE_MAP = str.maketrans({
+        "\u2018": "'", "\u2019": "'",
+        "\u201c": '"', "\u201d": '"',
+        "\u2013": "-", "\u2014": "-",
+    })
+    anchor_norm = re.sub(r"\s+", " ", anchor).strip().translate(_QUOTE_MAP)
     if not anchor_norm:
         return -1
     # build normalized body with offset map
@@ -166,7 +192,7 @@ def _find_anchor(body, anchor):
             while i < len(body) and body[i].isspace():
                 i += 1
         else:
-            norm_chars.append(body[i])
+            norm_chars.append(body[i].translate(_QUOTE_MAP))
             norm_to_orig.append(i)
             i += 1
     nbody = "".join(norm_chars)
@@ -227,6 +253,11 @@ def get_step_placements(level_id, number):
         anchor = (ov.get("anchor_text") or "").strip()
         if not img:
             continue
+        if ov.get("placement") == "hide":
+            # Redundant copy / text screenshot / artifact: keep the file,
+            # render nothing for it on this lesson.
+            auto.pop(img, None)
+            continue
         if ov.get("placement") == "end":
             # pin to the very end of the lesson body
             auto[img] = len(body)
@@ -241,9 +272,12 @@ def get_step_placements(level_id, number):
         else:
             auto[img] = _step_end_offset(body, idx)
     placements = [{"image": img, "offset": off} for img, off in auto.items()]
-    # Order by step filename (workbook top-to-bottom sequence), then enforce
-    # non-decreasing offsets so images never display out of sequence.
-    placements.sort(key=lambda p: p["image"])
+    # Order by resolved offset (workbook top-to-bottom sequence), filename
+    # as tiebreak, then enforce non-decreasing offsets. The old
+    # filename-only sort + clamp stacked images: an image whose auto offset
+    # was smaller than the previous image's was clamped up to render at the
+    # same point (e.g. L1 L4 step05/step08, L1 L5 step02/step03).
+    placements.sort(key=lambda p: (p["offset"], p["image"]))
     last = 0
     for p in placements:
         if p["offset"] < last:

@@ -102,12 +102,14 @@ def gate_redirect(level_id):
 
 
 def user_lookbacks(user_id):
-    """Look Back reflections (did_homework=1, or lesson-1 text answers),
-    enriched with the lesson title, for donor reports."""
+    """ALL Look Back reflections for the user, enriched with the lesson
+    title, for the dashboard and donor reports. Previously this filtered
+    out rows where the student answered "No" (did_homework=0) or left the
+    text blank, so an instructor saw those as if they did not exist. A
+    "No" answer is still an answer and must stay reviewable."""
     conn = db.get_db()
     rows = conn.execute(
-        "SELECT * FROM lookback_responses WHERE user_id = ? AND"
-        " ((lesson_number >= 2 AND did_homework = 1) OR (lesson_number = 1 AND TRIM(answer_text) != ''))"
+        "SELECT * FROM lookback_responses WHERE user_id = ?"
         " ORDER BY created_at", (user_id,)).fetchall()
     conn.close()
     out = []
@@ -341,8 +343,7 @@ def log_work():
         conn.execute(
             "INSERT INTO entries (user_id, type, date, location, people_count, notes, follow_up, created_at)"
             " VALUES (?,?,?,?,?,?,?,?)",
-
-  (user["id"], etype, edate, request.form.get("location", "").strip(),
+            (user["id"], etype, edate, request.form.get("location", "").strip(),
              people, request.form.get("notes", "").strip(),
              1 if request.form.get("follow_up") else 0, db.now_iso()))
         conn.commit()
@@ -464,8 +465,12 @@ def lookback_satisfied(resp, number):
 def _auto_log_experience(uid, user, text, lookback_id=None, subj_qid=None):
     """Auto-log a ministry activity when the text describes sharing the gospel.
 
-    Returns (ask_count_entry_id or None, share_label). Dedupes on the link so
-    resubmissions update instead of duplicating.
+    Returns (ask_count_token or None, share_label). The token is a real entry
+    id when an existing entry still needs its people count, or the string
+    "pending" when an action was detected but no count was stated — the entry
+    is only created after the user confirms via the count prompt, so a
+    misdetection never becomes a permanent false record. Dedupes on the link
+    so resubmissions update instead of duplicating.
     """
     action = detect_ministry_action(text)
     if not action:
@@ -488,24 +493,34 @@ def _auto_log_experience(uid, user, text, lookback_id=None, subj_qid=None):
     if row:
         conn.execute("UPDATE entries SET type = ?, notes = ? WHERE id = ?",
                      (atype, notes, row["id"]))
-        entry_id = row["id"]
-        if not row["people_count"] and count:
+        if count and not row["people_count"]:
             conn.execute("UPDATE entries SET people_count = ? WHERE id = ?",
-                         (count, entry_id))
-    else:
+                         (count, row["id"]))
+            row = dict(row)
+            row["people_count"] = count
+        conn.commit()
+        conn.close()
+        already_counted = bool(row["people_count"])
+        return (None if already_counted else row["id"]), share_label
+    if count:
+        # The user stated the number themselves: confirmed, log immediately.
         conn.execute(
             "INSERT INTO entries (user_id, type, date, location, people_count, notes,"
             " follow_up, created_at, source, reflection_id, lookback_id, subj_question_id)"
             " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-            (uid, atype, date.today().isoformat(), loc, count or 0, notes,
+            (uid, atype, date.today().isoformat(), loc, count, notes,
              0, db.now_iso(), "reflection", None, lookback_id, subj_qid))
-        entry_id = conn.execute(
-            f"SELECT id FROM entries WHERE user_id = ? AND {link_col} = ?"
-            " ORDER BY id DESC LIMIT 1", (uid, link_val)).fetchone()["id"]
-    conn.commit()
+        conn.commit()
+        conn.close()
+        return None, share_label
+    # Detected, but no count and nothing logged yet: hold the details in the
+    # session and only create the entry if the user answers the count prompt.
     conn.close()
-    already_counted = (row and row["people_count"]) or count
-    return (None if already_counted else entry_id), share_label
+    session["pending_share"] = {
+        "atype": atype, "share_label": share_label, "notes": notes,
+        "location": loc, "lookback_id": lookback_id, "subj_qid": subj_qid,
+    }
+    return "pending", share_label
 
 
 def _valid_ask_count(uid, entry_id):
@@ -562,7 +577,9 @@ def training_lesson(level_id, number):
     is_intro = (number == 0)
     lbl = request.args.get("share_label")
     share_label = lbl if lbl in SHARE_LABELS else None
-    ask_count = _valid_ask_count(uid, request.args.get("ask_count", type=int))
+    raw_ask = request.args.get("ask_count")
+    ask_count = ("pending" if raw_ask == "pending" and session.get("pending_share")
+                 else _valid_ask_count(uid, request.args.get("ask_count", type=int)))
 
     # Look Back gate (inline): lessons 1+ show only their Look Back section
     # until the reflection is answered. Introduction pages have no Look Back.
@@ -603,6 +620,8 @@ def training_lesson(level_id, number):
                 err_qid=request.args.get("err"))))
     body_html = get_lesson_body_html(level_id, number, t("step_caption", lang),
                                      extra_inserts=inserts)
+    subj_answered = sum(1 for q in subj if (saved.get(q["id"]) or "").strip())
+    subj_first_qid = subj[0]["id"] if subj else ""
     return render_template("training_lesson.html", level=lvl, lesson=les, done=done,
                            total=total, prev_n=prev_n, next_n=next_n,
                            questions=questions, quiz_done=qdone,
@@ -611,7 +630,9 @@ def training_lesson(level_id, number):
                            illustrations=get_lesson_illustrations(level_id, number),
                            lookback_gate=False, unanswered=unanswered,
                            ask_count=ask_count, share_label=share_label,
-                           is_intro=is_intro)
+                           is_intro=is_intro, lb_resp=lb_resp, lb_text=lb_text,
+                           subj_answered=subj_answered, subj_total=len(subj),
+                           subj_first_qid=subj_first_qid)
 
 
 @app.route("/training/<level_id>/<int:number>/respond", methods=["POST"])
@@ -717,14 +738,35 @@ def save_lookback(level_id, number):
 @app.route("/training/<level_id>/<int:number>/count", methods=["POST"])
 @login_required
 def save_shared_count(level_id, number):
-    """Fill in the people count for an auto-logged reflection entry."""
+    """Fill in the people count for an auto-logged reflection entry.
+
+    When the detection was "pending" (no count stated, no entry created yet),
+    this confirmation is what creates the entry — dismissing the prompt
+    creates nothing.
+    """
     uid = session["user_id"]
     entry_id = request.form.get("entry_id", type=int)
     try:
         count = int(request.form.get("people_count") or 0)
     except (TypeError, ValueError):
         count = 0
-    if entry_id and count > 0:
+    if count <= 0:
+        session.pop("pending_share", None)
+        return redirect(url_for("training_lesson", level_id=level_id, number=number))
+    if request.form.get("pending"):
+        pend = session.pop("pending_share", None)
+        if pend and pend.get("share_label"):
+            conn = db.get_db()
+            conn.execute(
+                "INSERT INTO entries (user_id, type, date, location, people_count, notes,"
+                " follow_up, created_at, source, reflection_id, lookback_id, subj_question_id)"
+                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+                (uid, pend["atype"], date.today().isoformat(), pend["location"], count,
+                 pend["notes"], 0, db.now_iso(), "reflection", None,
+                 pend.get("lookback_id"), pend.get("subj_qid")))
+            conn.commit()
+            conn.close()
+    elif entry_id:
         conn = db.get_db()
         own = conn.execute("SELECT id FROM entries WHERE id = ? AND user_id = ?",
                            (entry_id, uid)).fetchone()
@@ -811,7 +853,6 @@ def lesson_completed(level_id, number):
     total = len(lvl["lessons"])
     next_n = number + 1 if number < total else None
     return render_template("lesson_completed.html", level=lvl, lesson=les, next_n=next_n)
-
 
 @app.route("/training/<level_id>/<int:number>/toggle", methods=["POST"])
 @login_required
@@ -913,7 +954,7 @@ def profile():
 
 @app.route("/health")
 def health():
-    return jsonify({"ok": True, "version": "2.4"})
+    return jsonify({"ok": True, "version": "2.5"})
 
 
 @app.route("/healthz")

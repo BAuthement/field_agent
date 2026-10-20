@@ -174,6 +174,13 @@ STRINGS = {
     "my_responses_sub": {"en": "Your answers from the lessons \u2014 edit them here any time.", "es": "Tus respuestas de las lecciones \u2014 ed\u00edtalas aqu\u00ed cuando quieras."},
     "responses_none": {"en": "No responses yet \u2014 they will appear here as you answer the questions in your lessons.", "es": "Sin respuestas a\u00fan \u2014 aparecer\u00e1n aqu\u00ed cuando respondas las preguntas de tus lecciones."},
     "my_lookbacks": {"en": "Look Back Reflections", "es": "Reflexiones de Mira Atr\u00e1s"},
+    "your_answer": {"en": "Your answer", "es": "Tu respuesta"},
+    "edit": {"en": "Edit", "es": "Editar"},
+    "answers_on_page": {"en": "Your answers on this page", "es": "Tus respuestas en esta p\u00e1gina"},
+    "answered": {"en": "answered", "es": "respondida"},
+    "not_answered": {"en": "not yet answered", "es": "a\u00fan sin responder"},
+    "not_applicable": {"en": "none for this lesson", "es": "ninguna para esta lecci\u00f3n"},
+    "subjective_boxes": {"en": "In-lesson questions", "es": "Preguntas en la lecci\u00f3n"},
     "edit_in_lesson": {"en": "Edit in lesson \u2192", "es": "Editar en la lecci\u00f3n \u2192"},
 }
 

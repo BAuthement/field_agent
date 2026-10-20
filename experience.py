@@ -35,10 +35,27 @@ PATTERNS = [
 ]
 _COMPILED = [(re.compile(p, re.IGNORECASE), t, l) for p, t, l in PATTERNS]
 
+#: Sentences containing these markers describe intent, plans, or goals —
+#: not completed actions. Detection skips such sentences so a goal like
+#: "six months to have Keisha baptized" is never logged as a baptism.
+_FUTURE_RE = re.compile(
+    r"\b(will|'ll|going to|gonna|plan to|plans to|hope to|hoping to|"
+    r"want to|wants to|would like|intend to|trying to|aim to|"
+    r"need to|have to|must|should)\b"
+    r"|\b(next (week|month|year|tuesday|wednesday|thursday|sunday)|tomorrow|soon)\b"
+    r"|\b(one|two|three|four|five|six|seven|eight|nine|ten|twelve|\d+)"
+    r"\s+(months?|weeks?|days?|years?)\s+to\b"
+    r"|\b(voy a|va a|vamos a|van a|quiero|quiere|queremos|"
+    r"planeo|espero|pr[óo]ximo|metas?)\b",
+    re.IGNORECASE)
+
+#: Split text into sentences for tense-aware detection.
+_SENT_SPLIT_RE = re.compile(r"[.!?\n]+")
+
 #: Valid i18n label keys returned by detect_ministry_action.
 SHARE_LABELS = frozenset(label for _, _, label in PATTERNS)
 
-_NOUNS = r"people|persons?|personas?|almas?|souls|hermanos?|famil(?:y|ies)|familias?|believers?|creyentes?"
+_NOUNS = r"people|persons?|personas?|almas?|souls|hermanos?|famil(?:y|ies)|familias?|believers?|creyentes?|men|women|hombres?|mujeres?"
 _NUM_WORDS = ("one|two|three|four|five|six|seven|eight|nine|ten|"
               "uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez")
 # "3 people", "two new believers", "con 12 personas" — one optional
@@ -57,12 +74,20 @@ _WORD_NUMBERS = {
 
 def detect_ministry_action(text):
     """Return (activity_type, label_key) for the first ministry action found
-    in the text, or None when nothing recognizable is described."""
+    in the text, or None when nothing recognizable is described.
+
+    Only sentences that read as completed actions count: sentences with
+    future/intent markers ("will", "going to", "plan to", "six months to",
+    ...) are skipped so goals and plans are not logged as done deeds.
+    """
     if not text:
         return None
-    for rx, atype, label in _COMPILED:
-        if rx.search(text):
-            return atype, label
+    for sent in _SENT_SPLIT_RE.split(text):
+        if not sent.strip() or _FUTURE_RE.search(sent):
+            continue
+        for rx, atype, label in _COMPILED:
+            if rx.search(sent):
+                return atype, label
     return None
 
 
