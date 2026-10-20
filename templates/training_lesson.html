@@ -40,6 +40,36 @@
   <div class="lookfwd"><strong>{{ t('look_forward') }}</strong>&#10;{{ lesson.look_forward }}</div>
   {% endif %}
 </div>
+{% if lb_text and lb_resp %}
+<div class="card" id="lookback-answer">
+  <h3>&#x1f50d; {{ t('lookback_title') }} &mdash; {{ t('your_answer') }}</h3>
+  {% if lesson.number >= 2 %}
+  <p><span class="badge">{% if lb_resp.did_homework %}{{ t('yes') }}{% else %}{{ t('no') }}{% endif %}</span></p>
+  {% endif %}
+  <div>{{ lb_resp.answer_text }}</div>
+  <details class="mt">
+    <summary>{{ t('edit') }}</summary>
+    <form method="post" action="{{ url_for('save_lookback', level_id=level.id, number=lesson.number) }}" class="mt">
+      {% if lesson.number >= 2 %}
+      <label><input type="radio" name="did_homework" value="yes"{% if lb_resp.did_homework == 1 %} checked{% endif %}> {{ t('yes') }}</label>
+      <label><input type="radio" name="did_homework" value="no"{% if lb_resp.did_homework == 0 %} checked{% endif %}> {{ t('no') }}</label>
+      {% endif %}
+      <textarea name="answer_text" rows="4">{{ lb_resp.answer_text }}</textarea>
+      <button class="btn small gold" type="submit">{{ t('answer_submit') }}</button>
+    </form>
+  </details>
+</div>
+{% endif %}
+{% if not is_intro %}
+<div class="card" id="answers-strip">
+  <h3>{{ t('answers_on_page') }}</h3>
+  <ul>
+    <li>{% if lb_text and lb_resp %}<a href="#lookback-answer">{{ t('lookback_title') }}: {{ t('answered') }}</a>{% elif lb_text %}{{ t('lookback_title') }}: {{ t('not_answered') }}{% else %}{{ t('lookback_title') }}: {{ t('not_applicable') }}{% endif %}</li>
+    <li>{% if subj_first_qid %}<a href="#tb-{{ subj_first_qid }}">{{ t('subjective_boxes') }}: {{ subj_answered }}/{{ subj_total }} {{ t('answered') }}</a>{% else %}{{ t('subjective_boxes') }}: {{ t('not_applicable') }}{% endif %}</li>
+    <li><a href="#quiz-card">{{ t('quiz_title') }}: {% if quiz_done %}{{ t('quiz_done_banner') }}{% else %}{{ t('not_answered') }}{% endif %}</a></li>
+  </ul>
+</div>
+{% endif %}
 {% if illustrations %}
 <div class="card">
   <h3>&#x1f5bc; {{ t('illus_title') }}</h3>
@@ -53,7 +83,7 @@
 </div>
 {% endif %}
 {% if questions %}
-<div class="card">
+<div class="card" id="quiz-card">
   <h3>&#x1f9e0; {{ t('quiz_title') }}</h3>
   <p class="sub">{{ t('quiz_sub') }}</p>
   {% if quiz_done %}
@@ -67,7 +97,11 @@
 <div class="card highlight">
   <p><strong>{{ t('count_title') }}</strong></p>
   <form method="post" action="{{ url_for('save_shared_count', level_id=level.id, number=lesson.number) }}">
-    <input type="hidden" name="entry_id" value="{{ ask_count }}">
+    {% if ask_count == "pending" %}
+      <input type="hidden" name="pending" value="1">
+    {% else %}
+      <input type="hidden" name="entry_id" value="{{ ask_count }}">
+    {% endif %}
     <input type="number" name="people_count" min="1" required style="width:90px" placeholder="0">
     <button class="btn gold" type="submit">{{ t('count_save') }}</button>
   </form>

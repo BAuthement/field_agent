@@ -40,7 +40,7 @@
       {% endif %}
       <div class="entry" id="resp-{{ r.qid }}">
         <div><strong>{{ r.label_es if lang == 'es' else r.label_en }}</strong></div>
-        <div class="meta">{{ r.lesson_title }}</div>
+        <div class="meta"><a href="{{ url_for('training_lesson', level_id=r.level_id, number=r.lesson_number) }}#tb-{{ r.qid }}">{{ r.lesson_title }}</a></div>
         <div>{{ r.answer_text }}</div>
         <form method="post" action="{{ url_for('save_response', level_id=r.level_id, number=r.lesson_number) }}" class="mt">
           <input type="hidden" name="question_id" value="{{ r.qid }}">
@@ -59,7 +59,7 @@
   {% if lookbacks %}
     {% for lb in lookbacks %}
     <div class="entry" id="lb-{{ lb.level_id }}-{{ lb.lesson_number }}">
-      <div><strong>{{ lb.lesson_title }}</strong>
+      <div><strong><a href="{{ url_for('training_lesson', level_id=lb.level_id, number=lb.lesson_number) }}#lookback-answer">{{ lb.lesson_title }}</a></strong>
         {% if lb.lesson_number >= 2 %}
         <span class="badge">{% if lb.did_homework %}{{ t('yes') }}{% else %}{{ t('no') }}{% endif %}</span>
         {% endif %}
